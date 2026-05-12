@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="he">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Harmony LSA – Quiz</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --sky:#0a1628;--accent:#e8a020;--accent2:#f0c060;
+  --green:#22c55e;--red:#ef4444;--text:#e2e8f0;--muted:#94a3b8;
+  --card:rgba(255,255,255,0.05);--border:rgba(255,255,255,0.1);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none}
+html,body{min-height:100%;background:var(--sky);color:var(--text);font-family:'Heebo',sans-serif;touch-action:manipulation}
+
+/* COVER */
+#cover{min-height:100vh;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;padding:1.5rem 1rem 2rem;text-align:center;
+  background:radial-gradient(ellipse at 30% 20%,rgba(26,58,107,.8) 0%,transparent 60%),
+             radial-gradient(ellipse at 80% 80%,rgba(232,160,32,.15) 0%,transparent 50%),
+             linear-gradient(160deg,#0a1628 0%,#0d1f3c 50%,#0a1628 100%)}
+.cover-badge{display:inline-block;background:rgba(232,160,32,.15);border:1px solid var(--accent);
+  color:var(--accent);font-size:.75rem;font-weight:700;letter-spacing:.15em;padding:.3rem 1rem;
+  border-radius:50px;margin-bottom:1.2rem;text-transform:uppercase}
+.plane-img{width:min(500px,92vw);border-radius:14px;margin-bottom:1.8rem;
+  box-shadow:0 20px 60px rgba(0,0,0,.6),0 0 0 1px rgba(232,160,32,.3)}
+.cover-title{font-size:clamp(1.7rem,5vw,2.8rem);font-weight:900;line-height:1.2;margin-bottom:.7rem;
+  background:linear-gradient(135deg,#fff 30%,var(--accent2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.cover-sub{color:var(--muted);font-size:1rem;margin-bottom:.5rem}
+.cover-count{font-size:.88rem;color:var(--accent);font-weight:500;margin-bottom:.9rem}
+.cover-disclaimer{width:100%;max-width:500px;font-size:.76rem;color:#64748b;line-height:1.9;
+  padding:.75rem 1rem;border:1px solid rgba(255,255,255,.06);border-radius:9px;
+  background:rgba(255,255,255,.03);margin-bottom:1.5rem;direction:rtl}
+.btn-start{background:linear-gradient(135deg,var(--accent),#c87010);color:#fff;
+  font-family:'Heebo',sans-serif;font-size:1.1rem;font-weight:700;padding:.85rem 2.8rem;
+  border:none;border-radius:50px;cursor:pointer;box-shadow:0 8px 30px rgba(232,160,32,.4);transition:all .2s}
+.btn-start:hover{transform:translateY(-2px)}
+
+/* QUIZ */
+#quiz{display:none;min-height:100vh;padding:1.2rem .9rem 2rem}
+.quiz-inner{max-width:680px;margin:0 auto}
+.quiz-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:.5rem}
+.quiz-logo{font-size:.85rem;font-weight:700;color:var(--accent)}
+.quiz-stats{display:flex;gap:1rem;font-size:.82rem;color:var(--muted)}
+.stat-c{color:var(--green);font-weight:700}
+.stat-w{color:var(--red);font-weight:700}
+.progress-bar{height:3px;background:rgba(255,255,255,.08);border-radius:2px;margin-bottom:1.4rem;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .4s}
+
+.q-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.6rem 1.4rem;margin-bottom:1.2rem}
+.q-num{font-size:.75rem;color:var(--accent);font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:.7rem}
+.q-text-en{font-size:1.1rem;font-weight:500;line-height:1.65;direction:ltr;text-align:left}
+.q-text-he{font-size:1.1rem;font-weight:500;line-height:1.65;direction:rtl;text-align:right}
+
+.opts{display:flex;flex-direction:column;gap:.65rem;margin-bottom:1.2rem}
+.opt-en{background:var(--card);border:1.5px solid var(--border);border-radius:11px;
+  padding:.85rem 1.1rem;text-align:left;font-family:'Heebo',sans-serif;font-size:.98rem;
+  color:var(--text);cursor:pointer;transition:all .18s;display:flex;align-items:center;
+  gap:.75rem;direction:ltr;width:100%;-webkit-appearance:none}
+.opt-en:hover:not(:disabled){background:rgba(26,58,107,.55);border-color:var(--accent);transform:translateX(2px)}
+.opt-he{background:var(--card);border:1.5px solid var(--border);border-radius:11px;
+  padding:.85rem 1.1rem;text-align:right;font-family:'Heebo',sans-serif;font-size:.98rem;
+  color:var(--text);cursor:pointer;transition:all .18s;display:flex;align-items:center;
+  gap:.75rem;direction:rtl;width:100%;-webkit-appearance:none}
+.opt-he:hover:not(:disabled){background:rgba(26,58,107,.55);border-color:var(--accent);transform:translateX(-2px)}
+.opt-letter{width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;
+  font-size:.8rem;font-weight:700;flex-shrink:0;transition:all .18s}
+.opt-en.correct,.opt-he.correct{background:rgba(34,197,94,.15);border-color:var(--green)}
+.opt-en.correct .opt-letter,.opt-he.correct .opt-letter{background:var(--green);border-color:var(--green);color:#000}
+.opt-en.wrong,.opt-he.wrong{background:rgba(239,68,68,.12);border-color:var(--red);opacity:.7}
+.opt-en.wrong .opt-letter,.opt-he.wrong .opt-letter{background:var(--red);border-color:var(--red);color:#fff}
+.opt-en:disabled,.opt-he:disabled{cursor:default}
+
+.feedback{display:none;border-radius:14px;padding:1.3rem;margin-bottom:1.2rem;border:1.5px solid;animation:fadeIn .3s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+.correct-fb{background:rgba(34,197,94,.08);border-color:var(--green)}
+.wrong-fb{background:rgba(239,68,68,.07);border-color:var(--red)}
+.fb-icon{font-size:1.6rem;margin-bottom:.35rem}
+.fb-title{font-size:1rem;font-weight:700;margin-bottom:.3rem}
+.fb-ans{font-size:.9rem;color:var(--muted);margin-bottom:.75rem;line-height:1.6}
+.fb-ans strong{color:var(--text)}
+.fb-ans-en{direction:ltr;text-align:left}
+.fb-ans-he{direction:rtl;text-align:right}
+.fb-excerpt{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);
+  border-radius:0 8px 8px 0;padding:.7rem .9rem;margin-bottom:.8rem;font-size:.83rem;line-height:1.8;color:#a0aec0}
+.fb-excerpt-en{direction:ltr;text-align:left;border-left:3px solid var(--accent);border-right:none}
+.fb-excerpt-he{direction:rtl;text-align:right;border-right:3px solid var(--accent);border-left:none}
+.fb-excerpt-label{font-size:.71rem;color:var(--accent);font-weight:700;letter-spacing:.08em;
+  text-transform:uppercase;margin-bottom:.3rem;display:block}
+.fb-src-link{display:inline-flex;align-items:center;gap:.4rem;font-size:.8rem;
+  background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.13);
+  border-radius:7px;padding:.38rem .8rem;color:var(--accent);text-decoration:none;cursor:pointer}
+.fb-src-link:active{background:rgba(232,160,32,.2)}
+.fb-abbrev{display:none;margin-top:.5rem;font-size:.75rem;color:#64748b;line-height:1.8;
+  padding:.45rem .7rem;background:rgba(255,255,255,.04);border-radius:6px;border:1px solid rgba(255,255,255,.07)}
+
+/* Navigation buttons row */
+.nav-row{display:flex;gap:.6rem;margin-bottom:.6rem}
+.btn-next{flex:1;background:linear-gradient(135deg,var(--accent),#c87010);color:#fff;
+  font-family:'Heebo',sans-serif;font-size:1rem;font-weight:700;padding:.8rem;
+  border:none;border-radius:11px;cursor:pointer;transition:all .2s;box-shadow:0 4px 18px rgba(232,160,32,.3)}
+.btn-next:hover{transform:translateY(-1px)}
+/* Previous button — shown only after Q1 and after answering */
+.btn-prev{background:rgba(255,255,255,.06);border:1.5px solid var(--border);color:var(--muted);
+  font-family:'Heebo',sans-serif;font-size:.9rem;font-weight:600;padding:.8rem 1.1rem;
+  border-radius:11px;cursor:pointer;transition:all .18s;white-space:nowrap}
+.btn-prev:hover{border-color:var(--accent);color:var(--accent)}
+
+.btn-home{background:transparent;border:1px solid var(--border);color:var(--muted);
+  font-family:'Heebo',sans-serif;font-size:.82rem;padding:.38rem .85rem;
+  border-radius:7px;cursor:pointer;transition:all .15s}
+.btn-home:hover{border-color:var(--accent);color:var(--accent)}
+
+/* Previous answer overlay */
+#prev-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:500;
+  padding:1rem;overflow-y:auto}
+.prev-box{max-width:680px;margin:2rem auto;background:#111827;border:1.5px solid var(--border);
+  border-radius:16px;padding:1.5rem}
+.prev-box-title{font-size:.75rem;color:var(--accent);font-weight:700;letter-spacing:.1em;
+  text-transform:uppercase;margin-bottom:1rem;display:flex;justify-content:space-between;align-items:center}
+.prev-close{background:rgba(255,255,255,.08);border:1px solid var(--border);color:var(--muted);
+  font-size:.85rem;width:28px;height:28px;border-radius:6px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.prev-q{font-size:1rem;font-weight:500;line-height:1.6;margin-bottom:.8rem}
+.prev-opts{display:flex;flex-direction:column;gap:.4rem;margin-bottom:.8rem}
+.prev-opt{padding:.55rem .9rem;border-radius:9px;font-size:.88rem;border:1.5px solid rgba(255,255,255,.1);color:var(--muted)}
+.prev-opt.was-correct{background:rgba(34,197,94,.15);border-color:var(--green);color:var(--text)}
+.prev-opt.was-wrong{background:rgba(239,68,68,.12);border-color:var(--red)}
+.prev-opt.was-answer{background:rgba(34,197,94,.15);border-color:var(--green);color:var(--text)}
+.prev-excerpt{background:rgba(255,255,255,.04);border-radius:8px;padding:.6rem .8rem;
+  font-size:.8rem;color:#a0aec0;line-height:1.75;margin-bottom:.6rem}
+.prev-src{display:inline-flex;align-items:center;gap:.3rem;font-size:.78rem;color:var(--accent);
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);
+  border-radius:6px;padding:.3rem .7rem;text-decoration:none}
+
+footer{text-align:center;padding:1.2rem;color:#475569;font-size:.74rem;direction:rtl}
+#lg{position:fixed;inset:0;background:#000;z-index:2000;display:none;
+  flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px}
+#lg p{font-size:12px;color:var(--accent);line-height:1.9}
+</style>
+</head>
+<body>
+<div id="lg"><p>📱 PORTRAIT MODE REQUIRED – Please rotate your device</p></div>
+
+<!-- COVER -->
+<div id="cover">
+  <div class="cover-badge">Evektor Harmony LSA</div>
+  <img class="plane-img" src="https://www.evektor.com/uploads/2023/06/HARMONY-LSA-home.webp"
+       alt="Harmony LSA" onerror="this.style.display='none'">
+  <h1 class="cover-title">שאלות למבחן על ספר המטוס</h1>
+  <div class="cover-sub">הרמוני LSA — Evektor Harmony</div>
+  <div class="cover-count" id="cover-count">טוען...</div>
+  <div class="cover-disclaimer">
+    <div style="margin-bottom:.45rem">מפותח בעזרת <strong style="color:var(--accent)">בינה מלאכותית</strong></div>
+    <div style="margin-bottom:.3rem">כל שימוש ביישומון הוא באחריות המשתמש בלבד.</div>
+    <div style="margin-bottom:.5rem">מומלץ לוודא כל תשובה במקום הרלוונטי — הפניות מופיעות אחרי כל שאלה.</div>
+    <div style="color:#ef4444;font-weight:600;font-size:.75rem;line-height:1.75;padding:.45rem .6rem;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:6px;">
+      ⚠ Do not rely on the answers here — neither for flight safety nor for any certification test.<br>
+      Any use is at the sole responsibility of the user.
+    </div>
+  </div>
+  <button class="btn-start" onclick="startQuiz()">התחל לתרגל</button>
+</div>
+
+<!-- QUIZ -->
+<div id="quiz">
+  <div class="quiz-inner">
+    <div class="quiz-header">
+      <span class="quiz-logo">Harmony LSA</span>
+      <div class="quiz-stats">
+        <span>Q <span id="qc">1</span></span>
+        <span class="stat-c">✓ <span id="sc">0</span></span>
+        <span class="stat-w">✗ <span id="sw">0</span></span>
+      </div>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="pf" style="width:0%"></div></div>
+
+    <div class="q-card">
+      <div class="q-num" id="qnum">Question 1</div>
+      <div id="qtext"></div>
+    </div>
+    <div class="opts" id="opts"></div>
+
+    <div class="feedback" id="feedback">
+      <div class="fb-icon" id="fb-icon"></div>
+      <div class="fb-title" id="fb-title"></div>
+      <div id="fb-ans"></div>
+      <div id="fb-excerpt" style="display:none">
+        <div id="fb-ex-inner" class="fb-excerpt">
+          <span class="fb-excerpt-label" id="fb-ex-label"></span>
+          <span id="fb-ex-text"></span>
+        </div>
+      </div>
+      <a id="fb-src" class="fb-src-link" href="#" target="_blank">📄 <span id="fb-src-text">מקור</span></a>
+      <div class="fb-abbrev" id="fb-abbrev"></div>
+    </div>
+
+    <!-- Navigation: Prev (hidden on Q1) + Next -->
+    <div class="nav-row" id="nav-row" style="display:none">
+      <button class="btn-prev" id="btn-prev" onclick="showPrev()">← תשובה קודמת</button>
+      <button class="btn-next" id="btn-next" onclick="nextQ()">שאלה הבאה ←</button>
+    </div>
+
+    <button class="btn-home" onclick="goHome()">← חזרה לדף הבית</button>
+  </div>
+  <footer>מבוסס על בד"ח הרמוני וספר המטוס הרמוני באתר אייפליי | חומר לחניכים</footer>
+</div>
+
+<!-- PREVIOUS ANSWER OVERLAY -->
+<div id="prev-overlay" onclick="closePrev(event)">
+  <div class="prev-box" id="prev-box">
+    <div class="prev-box-title">
+      <span id="prev-label">שאלה קודמת</span>
+      <button class="prev-close" onclick="closePrevBtn()">✕</button>
+    </div>
+    <div class="prev-q" id="prev-q"></div>
+    <div class="prev-opts" id="prev-opts"></div>
+    <div class="prev-excerpt" id="prev-excerpt" style="display:none"></div>
+    <a class="prev-src" id="prev-src" href="#" target="_blank">📄 <span id="prev-src-text"></span></a>
+  </div>
+</div>
+
+<script>
+const ABBREV={
+  "VNE":"VNE – Never Exceed",
+  "VNO":"VNO – Max Structural Cruising",
+  "VFE":"VFE – Max Flap Extended",
+  "VA":"VA – Maneuvering Speed",
+  "Vy":"Vy – Best Rate of Climb",
+  "Vx":"Vx – Best Angle of Climb",
+  "VS0":"VS0 – Stall, Flaps 50°",
+  "VS1":"VS1 – Stall, Clean",
+  "MTP":"MTP – Max Take-off Power (73.5 kW / 100 HP / 5,800 RPM)",
+  "MCP":"MCP – Max Continuous Power (69 kW / 95 HP / 5,500 RPM)",
+  "CHT":"CHT – Cylinder Head Temperature – חום ראש צילינדר",
+  "RPM":"RPM – Revolutions Per Minute – סל״ד",
+  "KIAS":"KIAS – Knots Indicated Airspeed – קשר מוצג",
+  "PSI":"PSI – Pounds per Square Inch",
+  "MAC":"MAC – Mean Aerodynamic Chord – מיתר אווירודינמי ממוצע",
+  "BRS":"BRS – Ballistic Recovery System – מצנח חירום מטוס",
+  "MTOW":"MTOW – Max Take-off Weight – 600 kg / 1,320 lbs",
+  "AGL":"AGL – Above Ground Level – מעל פני הקרקע",
+  "ISA":"ISA – International Standard Atmosphere",
+  "NM":"NM – Nautical Mile – מייל ימי (1 NM = 1.852 km)",
+};
+
+
+const QUESTIONS = [
+  {"lang": "en", "q": "What is VNE – Never Exceed Speed?", "opts": ["120 KIAS", "132 KIAS", "146 KIAS", "158 KIAS"], "ans": 2, "src": "POH Section 2, page 2-2", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=21", "kw": "146", "ex": "VNE: 146 KIAS (168 mph). Do not exceed this speed in any operation. Red line on ASI."},
+  {"lang": "en", "q": "What is VNO – Maximum Structural Cruising Speed?", "opts": ["90 KIAS", "107 KIAS", "115 KIAS", "130 KIAS"], "ans": 2, "src": "POH Section 2, page 2-2", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=21", "kw": "115", "ex": "VNO: 115 KIAS (132 mph). Do not exceed except in smooth air. Top of green arc."},
+  {"lang": "en", "q": "What is VA – Maneuvering Speed?", "opts": ["70 KIAS", "80 KIAS", "90 KIAS", "107 KIAS"], "ans": 2, "src": "POH Section 2, page 2-2", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=21", "kw": "90", "ex": "VA: 90 KIAS (104 mph). Do not make full or abrupt control inputs above this speed."},
+  {"lang": "en", "q": "What is VFE – Maximum Flap Extended Speed?", "opts": ["57 KIAS", "65 KIAS", "70 KIAS", "80 KIAS"], "ans": 2, "src": "POH Section 2, page 2-2", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=21", "kw": "70", "ex": "VFE: 70 KIAS (81 mph). Do not extend flaps above this speed. Top of white arc."},
+  {"lang": "en", "q": "What is VS0 – Stall Speed, flaps 50°, at maximum weight?", "opts": ["30 KIAS", "33 KIAS", "36 KIAS", "39 KIAS"], "ans": 1, "src": "POH Section 2, page 2-3", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=22", "kw": "33", "ex": "VS0: 33 KIAS (38 mph). Stall speed, flaps in landing position 50°, maximum weight. Bottom of white arc."},
+  {"lang": "en", "q": "What is VS1 – Stall Speed, flaps 0°, at maximum weight?", "opts": ["30 KIAS", "34 KIAS", "37 KIAS", "40 KIAS"], "ans": 1, "src": "POH Section 2, page 2-3", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=22", "kw": "34", "ex": "VS1: 34 KIAS (39 mph). Stall speed, flaps retracted 0°, maximum weight. Bottom of green arc."},
+  {"lang": "en", "q": "What is Vy – Best Rate of Climb, flaps 0°?", "opts": ["54 KIAS", "57 KIAS", "60 KIAS", "65 KIAS"], "ans": 2, "src": "POH Section 1, page 1-8", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=16", "kw": "60", "ex": "Vy (Best Rate of Climb), flaps 0° (retracted): 60 KIAS (74 mph). With flaps 15°: 57 KIAS."},
+  {"lang": "en", "q": "What is Vy – Best Rate of Climb, flaps 15° (take-off position)?", "opts": ["54 KIAS", "57 KIAS", "60 KIAS", "65 KIAS"], "ans": 1, "src": "POH Section 1, page 1-8", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=16", "kw": "57", "ex": "Vy (Best Rate of Climb), flaps 15° (take-off): 57 KIAS (66 mph). With flaps 0°: 60 KIAS."},
+  {"lang": "en", "q": "What is Vx – Best Angle of Climb, flaps 0°?", "opts": ["50 KIAS", "54 KIAS", "56 KIAS", "60 KIAS"], "ans": 2, "src": "POH Section 1, page 1-8", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=16", "kw": "56", "ex": "Vx (Best Angle of Climb), flaps 0°: 56 KIAS (65 mph). With flaps 15°: 54 KIAS."},
+  {"lang": "en", "q": "What is Vx – Best Angle of Climb, flaps 15°?", "opts": ["50 KIAS", "54 KIAS", "56 KIAS", "60 KIAS"], "ans": 1, "src": "POH Section 1, page 1-8", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=16", "kw": "54", "ex": "Vx (Best Angle of Climb), flaps 15°: 54 KIAS (63 mph). With flaps 0°: 56 KIAS."},
+  {"lang": "en", "q": "What is the stall speed with flaps 15° (take-off position)?", "opts": ["30 KIAS", "34 KIAS", "37 KIAS", "40 KIAS"], "ans": 1, "src": "POH Section 1, page 1-8", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=16", "kw": "34", "ex": "Stall speed, flaps 15° (take-off): 34 KIAS (39 mph). Same as VS1 (flaps 0°): 34 KIAS."},
+  {"lang": "en", "q": "What is the best glide speed after engine failure (flaps retracted)?", "opts": ["54 KIAS", "57 KIAS", "60 KIAS", "65 KIAS"], "ans": 1, "src": "POH Section 3, page 3-2", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=37", "kw": "57", "ex": "Best glide speed (flaps retracted): 57 KIAS (66 mph). Also used for precautionary and emergency landing with flaps 50°."},
+  {"lang": "en", "q": "What is the maximum cruise speed VMC at sea level, ISA, MCP?", "opts": ["95 KIAS", "100 KIAS", "107 KIAS", "115 KIAS"], "ans": 2, "src": "POH Section 1, page 1-8", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=16", "kw": "107", "ex": "Maximum cruise speed VMC: 107 KIAS at sea level, ISA, Maximum Continuous Power (MCP)."},
+  {"lang": "en", "q": "What is cruise speed VC at 2,000 ft, 75% MCP?", "opts": ["90 KIAS", "95 KIAS", "100 KIAS", "107 KIAS"], "ans": 1, "src": "POH Section 1, page 1-8", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=16", "kw": "95", "ex": "Cruise speed VC at 2,000 ft, 75% MCP: 95 KIAS. At sea level 75% MCP: 100 KIAS."},
+  {"lang": "en", "q": "What is the maximum range at 2,000 ft, 75% MCP?", "opts": ["450 NM", "520 NM", "630 NM", "700 NM"], "ans": 2, "src": "POH Section 1, page 1-8", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=16", "kw": "630", "ex": "Maximum range: 630 NM at 2,000 ft, 75% MCP, with 45-minute fuel reserve."},
+  {"lang": "en", "q": "What is the green arc on the airspeed indicator?", "opts": ["30–107 KIAS", "33–115 KIAS", "34–115 KIAS", "40–115 KIAS"], "ans": 2, "src": "POH Section 2, page 2-3", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=22", "kw": "34", "ex": "Green arc (Normal operating range): 34–115 KIAS. Lower limit: VS1. Upper limit: VNO."},
+  {"lang": "en", "q": "What is the white arc on the airspeed indicator?", "opts": ["30–65 KIAS", "33–70 KIAS", "34–80 KIAS", "36–70 KIAS"], "ans": 1, "src": "POH Section 2, page 2-3", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=22", "kw": "33", "ex": "White arc (Flap operating range): 33–70 KIAS. Lower limit: VS0. Upper limit: VFE."},
+  {"lang": "en", "q": "What is the yellow arc on the airspeed indicator?", "opts": ["107–146 KIAS", "115–146 KIAS", "115–158 KIAS", "120–146 KIAS"], "ans": 1, "src": "POH Section 2, page 2-3", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=22", "kw": "115", "ex": "Yellow arc (Caution range): 115–146 KIAS. Maneuvers must be conducted with caution in smooth air only."},
+  {"lang": "en", "q": "What is the Maximum Take-off Power (MTP)?", "opts": ["59.0 kW (80 HP) at 5,500 RPM", "69.0 kW (95 HP) at 5,500 RPM", "73.5 kW (100 HP) at 5,800 RPM", "78.0 kW (105 HP) at 5,800 RPM"], "ans": 2, "src": "POH Section 2, page 2-4", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=23", "kw": "73.5", "ex": "MTP (Maximum Take-off Power): 73.5 kW (100 HP) at 5,800 RPM – maximum 5 minutes."},
+  {"lang": "en", "q": "What is the Maximum Continuous Power (MCP)?", "opts": ["59.0 kW (80 HP) at 5,300 RPM", "65.0 kW (88 HP) at 5,300 RPM", "69.0 kW (95 HP) at 5,500 RPM", "73.5 kW (100 HP) at 5,800 RPM"], "ans": 2, "src": "POH Section 2, page 2-4", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=23", "kw": "69.0", "ex": "MCP (Maximum Continuous Power): 69.0 kW (95 HP) at 5,500 RPM – no time limit. Note: POH section 1 states 95 HP but section 2 instrument table shows 95 HP for continuous."},
+  {"lang": "en", "q": "What is the maximum RPM for take-off (MTP)?", "opts": ["5,200 RPM", "5,500 RPM", "5,800 RPM", "6,000 RPM"], "ans": 2, "src": "POH Section 2, page 2-4", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=23", "kw": "5,800", "ex": "Maximum take-off RPM (MTP): 5,800 RPM – maximum 5 minutes. Maximum continuous (MCP): 5,500 RPM."},
+  {"lang": "en", "q": "What is the maximum continuous RPM (MCP)?", "opts": ["5,000 RPM", "5,200 RPM", "5,500 RPM", "5,800 RPM"], "ans": 2, "src": "POH Section 2, page 2-4", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=23", "kw": "5,500", "ex": "Maximum continuous RPM (MCP): 5,500 RPM – no time limit. Maximum take-off (MTP): 5,800 RPM, max 5 min."},
+  {"lang": "en", "q": "What is the minimum idle RPM?", "opts": ["1,000 RPM", "1,200 RPM", "1,400 RPM", "1,600 RPM"], "ans": 2, "src": "POH Section 2, page 2-4", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=23", "kw": "1,400", "ex": "Minimum idle RPM: 1,400 RPM. Below this the engine may run rough or stall."},
+  {"lang": "en", "q": "What is the maximum oil temperature?", "opts": ["110°C", "120°C", "130°C", "140°C"], "ans": 2, "src": "POH Section 2, page 2-4", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=23", "kw": "130", "ex": "Maximum oil temperature (red line): 130°C (266°F). Optimum operating range: 90–110°C (190–230°F)."},
+  {"lang": "en", "q": "What is the minimum oil temperature for operation?", "opts": ["30°C", "40°C", "50°C", "70°C"], "ans": 2, "src": "POH Section 2, page 2-4", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=23", "kw": "50", "ex": "Minimum oil temperature for operation: 50°C (120°F). Take-off not permitted below this value."},
+  {"lang": "en", "q": "What is the optimum oil temperature range?", "opts": ["50–90°C", "70–110°C", "90–110°C", "110–130°C"], "ans": 2, "src": "POH Section 2, page 2-5", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=24", "kw": "90", "ex": "Oil temperature – optimum operation (green arc): 90–110°C (190–230°F). Yellow arc: 50–90°C and 110–130°C."},
+  {"lang": "en", "q": "What is the maximum CHT (Cylinder Head Temperature)?", "opts": ["100°C", "110°C", "120°C", "135°C"], "ans": 2, "src": "POH Section 2, page 2-5", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=24", "kw": "120", "ex": "Maximum CHT (Cylinder Head Temperature – red line): 120°C (248°F). Green arc: 50–120°C."},
+  {"lang": "en", "q": "What is the minimum oil pressure?", "opts": ["0.4 bar (6 PSI)", "0.8 bar (12 PSI)", "1.4 bar (20 PSI)", "2.0 bar (29 PSI)"], "ans": 1, "src": "POH Section 2, page 2-4", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=23", "kw": "0.8", "ex": "Minimum oil pressure (red line): 0.8 bar (12 PSI). Land immediately if pressure drops below this."},
+  {"lang": "en", "q": "What is the maximum oil pressure?", "opts": ["5.0 bar (73 PSI)", "5.5 bar (80 PSI)", "7.0 bar (102 PSI)", "8.3 bar (120 PSI)"], "ans": 2, "src": "POH Section 2, page 2-4", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=23", "kw": "7.0", "ex": "Maximum oil pressure (red line): 7.0 bar (102 PSI). Yellow arc upper: 5–7 bar (73–102 PSI)."},
+  {"lang": "en", "q": "What is the normal (green arc) oil pressure range?", "opts": ["0.8–2.0 bar (12–29 PSI)", "1.0–3.5 bar (15–51 PSI)", "2.0–5.0 bar (29–73 PSI)", "3.5–7.0 bar (51–102 PSI)"], "ans": 2, "src": "POH Section 2, page 2-5", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=24", "kw": "2.0", "ex": "Oil pressure – green arc (normal): 2.0–5.0 bar (29–73 PSI). Yellow: 0.8–2.0 and 5.0–7.0 bar."},
+  {"lang": "en", "q": "What is the normal (green arc) fuel pressure range?", "opts": ["1.5–2.5 bar (22–36 PSI)", "2.0–3.0 bar (29–44 PSI)", "2.8–3.2 bar (40.6–46.4 PSI)", "3.0–3.5 bar (44–51 PSI)"], "ans": 2, "src": "POH Section 2, page 2-5", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=24", "kw": "2.8", "ex": "Fuel pressure – green arc (normal): 2.8–3.2 bar (40.61–46.41 PSI). Yellow: 2.5–2.8 and 3.2–3.5 bar."},
+  {"lang": "en", "q": "What is the minimum fuel pressure?", "opts": ["1.0 bar (15 PSI)", "1.7 bar (25 PSI)", "2.5 bar (36 PSI)", "2.8 bar (41 PSI)"], "ans": 2, "src": "POH Section 2, page 2-5", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=24", "kw": "2.5", "ex": "Minimum fuel pressure (red line): 2.5 bar (36 PSI). Activate electric fuel pump if pressure drops here."},
+  {"lang": "en", "q": "What is the maximum fuel pressure?", "opts": ["3.2 bar (46 PSI)", "3.5 bar (51 PSI)", "4.0 bar (58 PSI)", "4.5 bar (65 PSI)"], "ans": 1, "src": "POH Section 2, page 2-5", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=24", "kw": "3.5", "ex": "Maximum fuel pressure (red line): 3.5 bar (51 PSI). Yellow arc upper: 3.2–3.5 bar (46.4–51 PSI)."},
+  {"lang": "en", "q": "What is the gear reduction ratio of the engine?", "opts": ["1.85 : 1", "2.00 : 1", "2.43 : 1", "3.47 : 1"], "ans": 2, "src": "POH Section 2, page 2-4", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=23", "kw": "2.43", "ex": "Gear reduction ratio: 2.43 : 1. Engine at 5,800 RPM gives propeller max 2,386 RPM."},
+  {"lang": "en", "q": "What is the propeller diameter?", "opts": ["60 in (152 cm)", "64 in (163 cm)", "68 in (173 cm)", "72 in (183 cm)"], "ans": 2, "src": "POH Section 2, page 2-4", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=23", "kw": "68", "ex": "Propeller: Warpdrive HPL-R, 3-blade, composite, ground-adjustable. Diameter: 68 in (173 cm)."},
+  {"lang": "en", "q": "What is the maximum propeller RPM?", "opts": ["2,000 RPM", "2,200 RPM", "2,386 RPM", "2,500 RPM"], "ans": 2, "src": "POH Section 2, page 2-4", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=23", "kw": "2,386", "ex": "Maximum propeller RPM: 2,386 RPM (engine at MTP 5,800 RPM, gear ratio 2.43:1)."},
+  {"lang": "en", "q": "What is the negative G limit for the engine?", "opts": ["0g (any duration)", "−0.5g max 5 seconds", "−1.0g max 3 seconds", "−2.0g max 2 seconds"], "ans": 1, "src": "POH Section 2, page 2-4", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=23", "kw": "-0.5", "ex": "Negative G limit: −0.5g for maximum 5 seconds. Exceeding this may cause oil starvation to the engine."},
+  {"lang": "en", "q": "What is the minimum voltage (green arc lower limit)?", "opts": ["10.0 V", "11.5 V", "12.4 V", "13.0 V"], "ans": 2, "src": "POH Section 2, page 2-5", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=24", "kw": "12.4", "ex": "Voltmeter – green arc (normal): 12.4–15.1 V. Red line minimum: 12.4 V. Maximum: 15.1 V."},
+  {"lang": "en", "q": "What is the maximum voltage (red line)?", "opts": ["14.0 V", "14.5 V", "15.1 V", "16.0 V"], "ans": 2, "src": "POH Section 2, page 2-5", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=24", "kw": "15.1", "ex": "Voltmeter – maximum (red line): 15.1 V. Normal range (green): 12.4–15.1 V."},
+  {"lang": "en", "q": "What is the minimum oil quantity?", "opts": ["1.5 liters", "2.0 liters", "2.5 liters", "3.0 liters"], "ans": 2, "src": "POH Section 2, page 2-12", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=30", "kw": "2.5", "ex": "Oil quantity: minimum 2.5 liters (min. mark on dip stick). Maximum 3.0 liters (max. mark on dip stick)."},
+  {"lang": "en", "q": "What is the maximum oil quantity?", "opts": ["2.0 liters", "2.5 liters", "3.0 liters", "3.5 liters"], "ans": 2, "src": "POH Section 2, page 2-12", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=30", "kw": "3.0", "ex": "Oil quantity: maximum 3.0 liters (max. mark on dip stick). Do not overfill. Minimum: 2.5 liters."},
+  {"lang": "en", "q": "What is the capacity of each fuel tank?", "opts": ["45 liters (11.9 US gal)", "50 liters (13.2 US gal)", "55 liters (14.5 US gal)", "60 liters (15.9 US gal)"], "ans": 3, "src": "POH Section 2, page 2-11", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=29", "kw": "60", "ex": "Fuel tank capacity per tank: 15.85 US gal = approx. 60 liters. Total: 31.7 US gal = approx. 120 liters."},
+  {"lang": "en", "q": "What is the total usable fuel?", "opts": ["110 liters (29.1 US gal)", "115 liters (30.4 US gal)", "118 liters (31.2 US gal)", "120 liters (31.7 US gal)"], "ans": 2, "src": "POH Section 2, page 2-11", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=29", "kw": "118", "ex": "Total usable fuel: 31.2 US gal = approx. 118 liters. Unusable: 0.5 US gal = approx. 2 liters."},
+  {"lang": "en", "q": "What is the total fuel capacity (both tanks)?", "opts": ["100 liters (26.4 US gal)", "110 liters (29.1 US gal)", "120 liters (31.7 US gal)", "130 liters (34.3 US gal)"], "ans": 2, "src": "POH Section 2, page 2-11", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=29", "kw": "120", "ex": "Total fuel capacity: 31.7 US gal = approx. 120 liters (2 × 60 liters). Usable: 31.2 US gal = 118 liters."},
+  {"lang": "en", "q": "What fuels are approved for the Harmony?", "opts": ["AVGAS 100LL only", "MOGAS RON 95 minimum, and AVGAS 100LL", "Any automotive fuel RON 91 or above", "MOGAS RON 95 only"], "ans": 1, "src": "POH Section 2, page 2-11", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=29", "kw": "RON 95", "ex": "Approved fuels: MOGAS minimum RON 95 (AKI 91) per EN 228, and AVGAS 100LL. AVGAS UL91 also approved."},
+  {"lang": "en", "q": "What is the Maximum Take-off Weight (MTOW)?", "opts": ["520 kg (1,146 lbs)", "550 kg (1,213 lbs)", "575 kg (1,268 lbs)", "600 kg (1,323 lbs)"], "ans": 3, "src": "POH Section 2, page 2-7", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=25", "kw": "600", "ex": "MTOW: 1,320 lbs (approx. 600 kg). This is the LSA category maximum. Do not exceed."},
+  {"lang": "en", "q": "What is the standard empty weight?", "opts": ["330 kg (728 lbs)", "370 kg (816 lbs)", "386 kg (850 lbs)", "420 kg (926 lbs)"], "ans": 2, "src": "POH Section 2, page 2-7", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=25", "kw": "386", "ex": "Standard empty weight: 850 lbs (approx. 386 kg). May vary with optional equipment."},
+  {"lang": "en", "q": "What is the maximum baggage compartment load?", "opts": ["15 kg (33 lbs)", "20 kg (44 lbs)", "25 kg (55 lbs)", "30 kg (66 lbs)"], "ans": 2, "src": "POH Section 2, page 2-7", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=25", "kw": "25", "ex": "Maximum baggage compartment load: 55 lbs (approx. 25 kg). Baggage must be secured within CG limits."},
+  {"lang": "en", "q": "What is the minimum pilot weight?", "opts": ["45 kg (99 lbs)", "50 kg (110 lbs)", "55 kg (121 lbs)", "60 kg (132 lbs)"], "ans": 2, "src": "POH Section 2, page 2-7", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=25", "kw": "55", "ex": "Minimum pilot weight: 121 lbs (approx. 55 kg). Below this, CG may exceed the forward limit."},
+  {"lang": "en", "q": "What is the CG operating envelope?", "opts": ["15–25% MAC", "18–28% MAC", "20–31% MAC", "22–35% MAC"], "ans": 2, "src": "POH Section 2, page 2-8", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=26", "kw": "20", "ex": "Operating CG range: 20–31% MAC. Empty airplane CG: 14 ± 5% MAC. Reference datum: 56.15 mm aft of wing leading edge."},
+  {"lang": "en", "q": "What is the MAC (Mean Aerodynamic Chord) length?", "opts": ["38.5 in (978 mm)", "42.0 in (1,067 mm)", "46.67 in (1,185 mm)", "52.0 in (1,321 mm)"], "ans": 2, "src": "POH Section 2, page 2-8", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=26", "kw": "46.67", "ex": "MAC = 46.67 in (1,185 mm). CG operating range: 20–31% MAC. Reference datum: 56.15 mm aft of wing leading edge."},
+  {"lang": "en", "q": "What is the maximum positive load factor?", "opts": ["+2.5g", "+3.5g", "+4.0g", "+6.0g"], "ans": 2, "src": "POH Section 2, page 2-8", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=26", "kw": "4.0", "ex": "Maximum positive load factor: +4.0g. Maximum negative: −2.0g. Aerobatics and intentional spins are prohibited."},
+  {"lang": "en", "q": "What is the maximum negative load factor?", "opts": ["−0.5g", "−1.0g", "−2.0g", "−3.5g"], "ans": 2, "src": "POH Section 2, page 2-8", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=26", "kw": "-2.0", "ex": "Maximum negative load factor: −2.0g. Maximum positive: +4.0g. Intentional negative-g maneuvers are prohibited."},
+  {"lang": "en", "q": "What is the maximum bank angle in a steep turn?", "opts": ["30°", "45°", "60°", "75°"], "ans": 2, "src": "POH Section 2, page 2-8", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=26", "kw": "60", "ex": "Maximum bank angle: 60°. At 60° bank, load factor = 2.0g. Aerobatics and intentional spins are prohibited."},
+  {"lang": "en", "q": "Are aerobatics and intentional spins permitted?", "opts": ["Yes, up to +4.0g", "Yes, with qualified instructor", "No – aerobatics and intentional spins are prohibited", "Yes, below 60° bank"], "ans": 2, "src": "POH Section 2, page 2-8", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=26", "kw": "prohibited", "ex": "WARNING: AEROBATICS AND INTENTIONAL SPINS ARE PROHIBITED."},
+  {"lang": "en", "q": "What is the minimum distance from lightning or thunderstorms?", "opts": ["10 miles (16 km)", "15 miles (24 km)", "25 miles (40 km)", "50 miles (80 km)"], "ans": 2, "src": "POH Section 2, page 2-9", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=27", "kw": "25", "ex": "NOT AUTHORIZED FOR FLIGHT WITHIN 25 MILES OF KNOWN LIGHTNING OR THUNDERSTORMS. Icing conditions also prohibited."},
+  {"lang": "en", "q": "What is the overall length of the Harmony?", "opts": ["18.5 ft (5.64 m)", "19.8 ft (6.04 m)", "20.51 ft (6.25 m)", "22.4 ft (6.82 m)"], "ans": 2, "src": "POH Section 1, page 1-5", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=13", "kw": "20.51", "ex": "Overall length: 20.51 ft (6.25 m). Wing span: 30.45 ft (9.28 m). Height: 8.12 ft (2.48 m)."},
+  {"lang": "en", "q": "What is the wing span?", "opts": ["27.5 ft (8.38 m)", "28.8 ft (8.78 m)", "30.45 ft (9.28 m)", "32.0 ft (9.75 m)"], "ans": 2, "src": "POH Section 1, page 1-5", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=13", "kw": "30.45", "ex": "Wing span: 30.45 ft (9.28 m). Wing area: 111.47 sq.ft. MAC: 46.67 in."},
+  {"lang": "en", "q": "What is the wing area?", "opts": ["95.0 sq.ft", "103.5 sq.ft", "111.47 sq.ft", "120.0 sq.ft"], "ans": 2, "src": "POH Section 1, page 1-5", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=13", "kw": "111.47", "ex": "Wing area: 111.47 sq.ft. Wing span: 30.45 ft. MAC: 46.67 in."},
+  {"lang": "en", "q": "What is the wheel base (nose gear to main gear)?", "opts": ["3.50 ft (1.07 m)", "4.00 ft (1.22 m)", "4.76 ft (1.45 m)", "5.50 ft (1.68 m)"], "ans": 2, "src": "POH Section 1, page 1-6", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=14", "kw": "4.76", "ex": "Wheel base: 4.76 ft (1.45 m). Wheel track (main gear width): 6.4 ft (1.95 m)."},
+  {"lang": "en", "q": "What is the wheel track (main gear width)?", "opts": ["4.76 ft (1.45 m)", "5.50 ft (1.68 m)", "6.40 ft (1.95 m)", "7.20 ft (2.19 m)"], "ans": 2, "src": "POH Section 1, page 1-6", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=14", "kw": "6.40", "ex": "Wheel track: 6.4 ft (1.95 m). Wheel base: 4.76 ft (1.45 m). Main and nose gear wheel diameter: 15 in."},
+  {"lang": "en", "q": "What is the horizontal tail unit (HTU) total area?", "opts": ["16.5 sq.ft", "18.0 sq.ft", "20.67 sq.ft", "24.0 sq.ft"], "ans": 2, "src": "POH Section 1, page 1-5", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=13", "kw": "20.67", "ex": "HTU total area: 20.67 sq.ft. Span: 9.09 ft. Elevator area: 9.06 sq.ft."},
+  {"lang": "en", "q": "What is the VTU (Vertical Tail Units) area?", "opts": ["8.0 sq.ft", "9.5 sq.ft", "11.2 sq.ft", "13.0 sq.ft"], "ans": 2, "src": "POH Section 1, page 1-5", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=13", "kw": "11.2", "ex": "VTU area: 11.2 sq.ft. VTU height: 4.21 ft."},
+  {"lang": "en", "q": "What is the aileron area (per side)?", "opts": ["2.10 sq.ft", "2.80 sq.ft", "3.35 sq.ft", "4.00 sq.ft"], "ans": 2, "src": "POH Section 1, page 1-5", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=13", "kw": "3.35", "ex": "Aileron area per side: 3.35 sq.ft. Flap area per side: 5.60 sq.ft."},
+  {"lang": "en", "q": "What is the flap area (per side)?", "opts": ["3.80 sq.ft", "4.50 sq.ft", "5.60 sq.ft", "6.80 sq.ft"], "ans": 2, "src": "POH Section 1, page 1-5", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=13", "kw": "5.60", "ex": "Flap area per side: 5.60 sq.ft. Aileron area per side: 3.35 sq.ft. Max flap deflection: 50°."},
+  {"lang": "en", "q": "What is the glide speed for best glide ratio (flaps retracted)?", "opts": ["54 KIAS", "57 KIAS", "60 KIAS", "65 KIAS"], "ans": 1, "src": "POH Section 3, page 3-2", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=37", "kw": "57", "ex": "Best glide speed (flaps retracted): 57 KIAS (66 mph). Also: precautionary/emergency landing with flaps 50°: 57 KIAS."},
+  {"lang": "en", "q": "After engine failure below 150 ft AGL during take-off – what do you do?", "opts": ["Turn 180° back to runway", "Land in take-off direction – straight ahead", "Turn up to 90° and land", "Climb and circle back"], "ans": 1, "src": "POH Section 3, page 3-4", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=38", "kw": "take-off direction", "ex": "Engine failure after take-off, below 150 ft: land in take-off direction (straight ahead). Do NOT attempt to turn."},
+  {"lang": "en", "q": "After engine failure between 150 ft and 400 ft AGL – what is possible?", "opts": ["Turn 180° back to runway", "Land straight ahead only", "Land in take-off direction or turn up to 90°", "Restart engine and continue"], "ans": 2, "src": "POH Section 3, page 3-4", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=38", "kw": "90°", "ex": "Engine failure 150–400 ft AGL: land in take-off direction, or you can perform turn up to 90°."},
+  {"lang": "en", "q": "From what altitude can you attempt a 180° turn back after engine failure on take-off?", "opts": ["Above 150 ft AGL", "Above 250 ft AGL", "Above 400 ft AGL", "Above 500 ft AGL"], "ans": 2, "src": "POH Section 3, page 3-4", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=38", "kw": "400", "ex": "Engine failure after take-off: can perform turn up to 180° only above 400 ft AGL."},
+  {"lang": "en", "q": "From what altitude can you attempt to restart the engine after failure on take-off?", "opts": ["Above 100 ft AGL", "Above 150 ft AGL", "Above 250 ft AGL", "Above 400 ft AGL"], "ans": 2, "src": "POH Section 3, page 3-4", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=38", "kw": "250", "ex": "Engine failure after take-off: you can try to restart the engine above 250 ft AGL. Above 400 ft: can also turn 180°."},
+  {"lang": "en", "q": "What is the correct spin recovery sequence?", "opts": ["Ailerons, rudder, stick forward, recover", "Throttle idle, ailerons neutral, full opposite rudder, stick forward, recover", "Stick forward only, then full throttle", "Full throttle, opposite rudder, stick back"], "ans": 1, "src": "POH Section 3, page 3-14", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=48", "kw": "rudder", "ex": "Spin recovery (POH 3.11): 1. Throttle – idle. 2. Ailerons – neutral. 3. Full opposite rudder. 4. Stick forward. 5. Recover from dive. WARNING: Do not use ailerons to stop rotation."},
+  {"lang": "en", "q": "What is the emergency landing speed (engine stopped, flaps 50°)?", "opts": ["54 KIAS", "57 KIAS", "60 KIAS", "65 KIAS"], "ans": 1, "src": "POH Section 3, page 3-2", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=37", "kw": "57", "ex": "Emergency landing (engine stopped, flaps in LANDING II – 50°): 57 KIAS (66 mph)."},
+  {"lang": "en", "q": "What is the precautionary landing speed (engine running, flaps 50°)?", "opts": ["54 KIAS", "57 KIAS", "60 KIAS", "65 KIAS"], "ans": 1, "src": "POH Section 3, page 3-2", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=37", "kw": "57", "ex": "Precautionary landing (engine running, flaps in LANDING II – 50°): 57 KIAS (66 mph)."},
+  {"lang": "en", "q": "At what altitude after take-off should flaps be retracted to 0°?", "opts": ["Immediately after lift-off", "At 100 ft AGL", "At 150 ft AGL", "At 500 ft AGL"], "ans": 2, "src": "POH Section 4, page 4-7", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=59", "kw": "150", "ex": "After take-off, at 150 ft AGL: retract flaps from 15° to 0°. Accelerate to Vy 60 KIAS for climb."},
+  {"lang": "en", "q": "What is the normal approach speed on final (flaps 50°)?", "opts": ["54 KIAS", "57 KIAS", "60 KIAS", "65 KIAS"], "ans": 1, "src": "POH Section 4, page 4-16", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=68", "kw": "57", "ex": "Normal approach speed on final with flaps 50°: 57 KIAS. In strong crosswind: slightly higher speed recommended."},
+  {"lang": "en", "q": "What is the maximum rate of climb at sea level (MTP, MTOW, ISA)?", "opts": ["450 ft/min (2.3 m/s)", "580 ft/min (2.9 m/s)", "700 ft/min (3.6 m/s)", "900 ft/min (4.6 m/s)"], "ans": 2, "src": "POH Section 5, page 5-2", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=76", "kw": "700", "ex": "Maximum rate of climb at sea level (MTP, MTOW, ISA): approx. 700 ft/min (3.6 m/s) at Vy 60 KIAS."},
+  {"lang": "en", "q": "What is the take-off roll distance at MTOW, sea level, ISA?", "opts": ["500 ft (152 m)", "650 ft (198 m)", "820 ft (250 m)", "1,000 ft (305 m)"], "ans": 2, "src": "POH Section 5, page 5-4", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=78", "kw": "820", "ex": "Take-off roll (MTOW, sea level, ISA, hard surface, no wind): approx. 820 ft (250 m)."},
+  {"lang": "en", "q": "What is the landing roll at MTOW, sea level, ISA, flaps 50°?", "opts": ["400 ft (122 m)", "520 ft (158 m)", "650 ft (198 m)", "820 ft (250 m)"], "ans": 2, "src": "POH Section 5, page 5-12", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=86", "kw": "650", "ex": "Landing roll (MTOW, sea level, ISA, flaps 50°, hard surface, no wind): approx. 650 ft (198 m)."},
+  {"lang": "he", "q": "מה צריך לבדוק לפני ביצוע הבדיקות החיצוניות?", "opts": ["שהמצתים מופסקים (OFF)", "לחץ שמן תקין", "כמות הדלק בשעונים", "ניתוק החשמל"], "ans": 0, "src": "בד\"ח – אזהרה", "url": "https://www.ifly.co.il/wp-content/uploads/2024/06/%D7%91%D7%93%D7%97-%D7%94%D7%A8%D7%9E%D7%95%D7%A0%D7%99-%D7%9E%D7%90%D7%99-2024.pdf#page=1", "kw": "מצתים", "ex": "אזהרה: לפני ביצוע בדיקות חיצוניות ולפני כניסה לתא הטייס – ודא שהמצתים מופסקים (OFF)!"},
+  {"lang": "he", "q": "לאיזה מיכל מכוונים ברז הדלק בתחילת ההתנעה?", "opts": ["ימין תמיד", "שמאל – לפי הבד\"ח", "הכי מלא", "לא חשוב"], "ans": 1, "src": "בד\"ח – התנעה", "url": "https://www.ifly.co.il/wp-content/uploads/2024/06/%D7%91%D7%93%D7%97-%D7%94%D7%A8%D7%9E%D7%95%D7%A0%D7%99-%D7%9E%D7%90%D7%99-2024.pdf#page=6", "kw": "שמאל", "ex": "בד\"ח התנעה, סעיף 2: בורר דלק – שמאל. לאחר התנעה עוברים לימין לוידוא פעולה תקינה."},
+  {"lang": "he", "q": "כמה זמן ניתן להפעיל את המתנע ברצף?", "opts": ["5 שניות", "10 שניות", "20 שניות", "30 שניות"], "ans": 1, "src": "בד\"ח – התנעה – זהירות", "url": "https://www.ifly.co.il/wp-content/uploads/2024/06/%D7%91%D7%93%D7%97-%D7%94%D7%A8%D7%9E%D7%95%D7%A0%D7%99-%D7%9E%D7%90%D7%99-2024.pdf#page=6", "kw": "10", "ex": "זהירות: אין להפעיל את המתנע יותר מ-10 שניות ברציפות. המתן 2 דקות לפחות בין ניסיונות."},
+  {"lang": "he", "q": "כמה זמן ממתינים בין ניסיונות התנעה?", "opts": ["30 שניות", "1 דקה", "2 דקות", "5 דקות"], "ans": 2, "src": "בד\"ח – התנעה – זהירות", "url": "https://www.ifly.co.il/wp-content/uploads/2024/06/%D7%91%D7%93%D7%97-%D7%94%D7%A8%D7%9E%D7%95%D7%A0%D7%99-%D7%9E%D7%90%D7%99-2024.pdf#page=6", "kw": "2", "ex": "זהירות: המתן לפחות 2 דקות בין ניסיונות התנעה. הפעלה רצופה תגרום לנזק למתנע."},
+  {"lang": "he", "q": "מה בודקים תוך 10 שניות מרגע ההתנעה?", "opts": ["טמפרטורת שמן", "לחץ שמן תקין", "לחץ דלק", "תגובת מד מהירות"], "ans": 1, "src": "בד\"ח – התנעה", "url": "https://www.ifly.co.il/wp-content/uploads/2024/06/%D7%91%D7%93%D7%97-%D7%94%D7%A8%D7%9E%D7%95%D7%A0%D7%99-%D7%9E%D7%90%D7%99-2024.pdf#page=6", "kw": "לחץ שמן", "ex": "בד\"ח התנעה: תוך 10 שניות מהתנעה – ודא שלחץ שמן עלה לטווח ירוק. לא עלה – כבה מנוע מיד!"},
+  {"lang": "he", "q": "מה ה-RPM לחימום מנוע לאחר ההתנעה?", "opts": ["1,400 RPM", "2,000 RPM", "2,500 RPM", "3,000 RPM"], "ans": 1, "src": "בד\"ח – אחרי התנעה", "url": "https://www.ifly.co.il/wp-content/uploads/2024/06/%D7%91%D7%93%D7%97-%D7%94%D7%A8%D7%9E%D7%95%D7%A0%D7%99-%D7%9E%D7%90%D7%99-2024.pdf#page=7", "kw": "2,000", "ex": "בד\"ח אחרי התנעה: חמם מנוע על 2,000 RPM עד שטמפרטורת השמן מגיעה למינימום 50°C."},
+  {"lang": "he", "q": "לאיזה מיכל עוברים לאחר ההתנעה ולמה?", "opts": ["נשארים על שמאל לאורך כל הטיסה", "עוברים לימין לוידוא פעולת מנוע תקינה כדקה", "עוברים לכי-מלא תמיד", "לא נוגעים בברז"], "ans": 1, "src": "בד\"ח – אחרי התנעה", "url": "https://www.ifly.co.il/wp-content/uploads/2024/06/%D7%91%D7%93%D7%97-%D7%94%D7%A8%D7%9E%D7%95%D7%A0%D7%99-%D7%9E%D7%90%D7%99-2024.pdf#page=7", "kw": "ימין", "ex": "בד\"ח אחרי התנעה: עבור לברז ימין ובדוק שהמנוע פועל תקין במשך כדקה. מוודא פעולת שני המיכלים."},
+  {"lang": "he", "q": "מה מצב הטרנספונדר אחרי ההתנעה (בשלב ההסעה)?", "opts": ["OFF", "STBY 5100", "ALT 5100", "TEST"], "ans": 1, "src": "בד\"ח – אחרי התנעה", "url": "https://www.ifly.co.il/wp-content/uploads/2024/06/%D7%91%D7%93%D7%97-%D7%94%D7%A8%D7%9E%D7%95%D7%A0%D7%99-%D7%9E%D7%90%D7%99-2024.pdf#page=7", "kw": "STBY 5100", "ex": "בד\"ח אחרי התנעה: טרנספונדר – STBY 5100. לפני המראה: ALT 5100. שים לב להבדל!"},
+  {"lang": "he", "q": "מה ה-RPM המקסימלי בהסעה?", "opts": ["2,000 RPM", "3,000 RPM", "4,000 RPM", "5,500 RPM"], "ans": 1, "src": "בד\"ח – הסעה", "url": "https://www.ifly.co.il/wp-content/uploads/2024/06/%D7%91%D7%93%D7%97-%D7%94%D7%A8%D7%9E%D7%95%D7%A0%D7%99-%D7%9E%D7%90%D7%99-2024.pdf#page=7", "kw": "3,000", "ex": "בד\"ח הסעה: ה-RPM לא יעלה על 3,000. גם טמפרטורת CHT לא תעלה על 120°C בהסעה."},
+  {"lang": "he", "q": "מה טמפרטורת CHT (ראש צילינדר) מקסימלית בהסעה?", "opts": ["100°C", "120°C", "135°C", "150°C"], "ans": 1, "src": "בד\"ח – הסעה", "url": "https://www.ifly.co.il/wp-content/uploads/2024/06/%D7%91%D7%93%D7%97-%D7%94%D7%A8%D7%9E%D7%95%D7%A0%D7%99-%D7%9E%D7%90%D7%99-2024.pdf#page=7", "kw": "120°C", "ex": "בד\"ח הסעה: אין לאפשר לנתוני חום ראש הצילינדר (CHT) לחרוג מ-120°C במהלך הסעה."},
+  {"lang": "he", "q": "מה ה-RPM לבדיקת מגנטו לפני המראה?", "opts": ["2,500 RPM", "3,000 RPM", "4,000 RPM", "5,000 RPM"], "ans": 2, "src": "בד\"ח – לפני המראה", "url": "https://www.ifly.co.il/wp-content/uploads/2024/06/%D7%91%D7%93%D7%97-%D7%94%D7%A8%D7%9E%D7%95%D7%A0%D7%99-%D7%9E%D7%90%D7%99-2024.pdf#page=8", "kw": "4,000", "ex": "בד\"ח לפני המראה: בדיקת מגנטו על 4,000 RPM. נפילה מקסימלית: 300 RPM לכל מגנטו. הפרש מקסימלי: 150 RPM."},
+  {"lang": "he", "q": "מהי הנפילה המקסימלית ב-RPM בבדיקת מגנטו יחיד?", "opts": ["100 RPM", "150 RPM", "200 RPM", "300 RPM"], "ans": 3, "src": "בד\"ח – לפני המראה", "url": "https://www.ifly.co.il/wp-content/uploads/2024/06/%D7%91%D7%93%D7%97-%D7%94%D7%A8%D7%9E%D7%95%D7%A0%D7%99-%D7%9E%D7%90%D7%99-2024.pdf#page=8", "kw": "300", "ex": "בד\"ח לפני המראה: נפילה מקסימלית מותרת במגנטו יחיד: 300 RPM. הפרש בין שני מגנטים: 150 RPM."},
+  {"lang": "he", "q": "מה ההפרש המקסימלי בין שני המגנטים?", "opts": ["100 RPM", "150 RPM", "200 RPM", "300 RPM"], "ans": 1, "src": "בד\"ח – לפני המראה", "url": "https://www.ifly.co.il/wp-content/uploads/2024/06/%D7%91%D7%93%D7%97-%D7%94%D7%A8%D7%9E%D7%95%D7%A0%D7%99-%D7%9E%D7%90%D7%99-2024.pdf#page=8", "kw": "150", "ex": "בד\"ח: הפרש מקסימלי בין מגנטו L ל-R: 150 RPM. מעל זה – אין להמריא, ברר תקלה."},
+  {"lang": "he", "q": "מה מצב הטרנספונדר לפני המראה?", "opts": ["OFF", "STBY 5100", "ALT 5100", "TEST"], "ans": 2, "src": "בד\"ח – לפני המראה", "url": "https://www.ifly.co.il/wp-content/uploads/2024/06/%D7%91%D7%93%D7%97-%D7%94%D7%A8%D7%9E%D7%95%D7%A0%D7%99-%D7%9E%D7%90%D7%99-2024.pdf#page=8", "kw": "ALT 5100", "ex": "בד\"ח לפני המראה: טרנספונדר – ALT 5100. שים לב: בהסעה STBY, לפני המראה ALT."},
+  {"lang": "he", "q": "מה טמפרטורת השמן המינימלית הנדרשת לפני המראה?", "opts": ["30°C", "40°C", "50°C", "70°C"], "ans": 2, "src": "בד\"ח – לפני המראה", "url": "https://www.ifly.co.il/wp-content/uploads/2024/06/%D7%91%D7%93%D7%97-%D7%94%D7%A8%D7%9E%D7%95%D7%A0%D7%99-%D7%9E%D7%90%D7%99-2024.pdf#page=8", "kw": "50°C", "ex": "בד\"ח לפני המראה: טמפרטורת שמן – לפחות 50°C לפני ביצוע המראה."},
+  {"lang": "he", "q": "מה טמפרטורת CHT המקסימלית לפני המראה?", "opts": ["100°C", "120°C", "135°C", "150°C"], "ans": 2, "src": "בד\"ח – לפני המראה", "url": "https://www.ifly.co.il/wp-content/uploads/2024/06/%D7%91%D7%93%D7%97-%D7%94%D7%A8%D7%9E%D7%95%D7%A0%D7%99-%D7%9E%D7%90%D7%99-2024.pdf#page=8", "kw": "135°C", "ex": "בד\"ח לפני המראה: טמפרטורת CHT לא תעלה על 135°C לפני המראה."},
+  {"lang": "he", "q": "לאיזה מצב מדפים מכינים לפני המראה?", "opts": ["מצב 0 – 0°", "מצב 1 – 15°", "מצב 2 – 30°", "מצב 3 – 50°"], "ans": 1, "src": "בד\"ח – לפני המראה", "url": "https://www.ifly.co.il/wp-content/uploads/2024/06/%D7%91%D7%93%D7%97-%D7%94%D7%A8%D7%9E%D7%95%D7%A0%D7%99-%D7%9E%D7%90%D7%99-2024.pdf#page=8", "kw": "15°", "ex": "בד\"ח לפני המראה: מדפים – מצב 1 (15°). זהו מצב ההמראה הרגיל."},
+  {"lang": "he", "q": "מה ה-RPM המינימלי לאישור המשך המראה?", "opts": ["4,500 RPM", "5,000 RPM", "5,500 RPM", "5,800 RPM"], "ans": 1, "src": "בד\"ח – המראה", "url": "https://www.ifly.co.il/wp-content/uploads/2024/06/%D7%91%D7%93%D7%97-%D7%94%D7%A8%D7%9E%D7%95%D7%A0%D7%99-%D7%9E%D7%90%D7%99-2024.pdf#page=9", "kw": "5,000", "ex": "בד\"ח המראה: אם RPM לא הגיע ל-5,000 לאחר פתיחת מצערת מלאה – בטל המראה מיד."},
+  {"lang": "he", "q": "מה עושים מיד לאחר ניתוק?", "opts": ["מורידים מדפים מיד", "מאיטים למהירות טיפוס", "לוחצים בלמים לעצירת גלגלים", "סוגרים את הצ'וק"], "ans": 2, "src": "בד\"ח – המראה", "url": "https://www.ifly.co.il/wp-content/uploads/2024/06/%D7%91%D7%93%D7%97-%D7%94%D7%A8%D7%9E%D7%95%D7%A0%D7%99-%D7%9E%D7%90%D7%99-2024.pdf#page=9", "kw": "בלמים", "ex": "בד\"ח המראה: מיד לאחר ניתוק – לחץ בלמים לעצירת גלגלים. ב-150 רגל – העלה מדפים ל-0°."},
+  {"lang": "he", "q": "מה מהירות הטיפוס לאחר ניתוק עם מדפים 15°?", "opts": ["54 קשר", "57 קשר", "60 קשר", "65 קשר"], "ans": 1, "src": "בד\"ח – המראה", "url": "https://www.ifly.co.il/wp-content/uploads/2024/06/%D7%91%D7%93%D7%97-%D7%94%D7%A8%D7%9E%D7%95%D7%A0%D7%99-%D7%9E%D7%90%D7%99-2024.pdf#page=9", "kw": "57 קשר", "ex": "בד\"ח המראה: לאחר ניתוק – טפס ב-57 קשר (Vy עם מדפים 15°). ב-150 רגל – העלה מדפים ל-0°."},
+  {"lang": "he", "q": "מתי כובים את משאבת הדלק לאחר המראה?", "opts": ["מיד אחרי ניתוק", "ב-150 רגל", "לאחר האצה ל-90–100 קשר", "ב-1,000 רגל"], "ans": 2, "src": "בד\"ח – המראה", "url": "https://www.ifly.co.il/wp-content/uploads/2024/06/%D7%91%D7%93%D7%97-%D7%94%D7%A8%D7%9E%D7%95%D7%A0%D7%99-%D7%9E%D7%90%D7%99-2024.pdf#page=9", "kw": "90–100 קשר", "ex": "בד\"ח המראה: לאחר האצה ל-90–100 קשר – כבה משאבת דלק חשמלית. אם לחץ דלק יורד – הפעל מחדש."},
+  {"lang": "he", "q": "מה מהירות השיוט המומלצת לפי הבד\"ח?", "opts": ["70–80 קשר", "90–100 קשר", "107 קשר", "115 קשר"], "ans": 1, "src": "בד\"ח – שיוט", "url": "https://www.ifly.co.il/wp-content/uploads/2024/06/%D7%91%D7%93%D7%97-%D7%94%D7%A8%D7%9E%D7%95%D7%A0%D7%99-%D7%9E%D7%90%D7%99-2024.pdf#page=10", "kw": "90–100 קשר", "ex": "בד\"ח שיוט: טוס במהירות 90–100 קשר, RPM עד 5,500 (MCT). החלף ברז דלק כל ~30 דקות."},
+  {"lang": "he", "q": "מה יש להפעיל לפני נחיתה?", "opts": ["לכבות אוויוניקה", "את משאבת הדלק החשמלית", "לסגור ברז דלק", "לכבות מצתים"], "ans": 1, "src": "בד\"ח – לפני נחיתה", "url": "https://www.ifly.co.il/wp-content/uploads/2024/06/%D7%91%D7%93%D7%97-%D7%94%D7%A8%D7%9E%D7%95%D7%A0%D7%99-%D7%9E%D7%90%D7%99-2024.pdf#page=11", "kw": "משאבת דלק", "ex": "בד\"ח לפני נחיתה: הפעל משאבת דלק חשמלית. ודא מדפים במצב הנכון. מהירות פיינל – 57–58 קשר."},
+  {"lang": "he", "q": "מה הסדר הנכון של הדממת מנוע לפי הבד\"ח?", "opts": ["מצתים, רדיו, אוויוניקה, מתג ראשי", "רדיו, אוויוניקה, מצתים, מתג ראשי", "מתג ראשי, מצתים, רדיו, אוויוניקה", "אוויוניקה, מצתים, מתג ראשי, רדיו"], "ans": 1, "src": "בד\"ח – הדממה", "url": "https://www.ifly.co.il/wp-content/uploads/2024/06/%D7%91%D7%93%D7%97-%D7%94%D7%A8%D7%9E%D7%95%D7%A0%D7%99-%D7%9E%D7%90%D7%99-2024.pdf#page=13", "kw": "רדיו", "ex": "בד\"ח הדממה: 1. המתן ל-1,400 RPM. 2. כבה רדיו. 3. כבה אוויוניקה. 4. מצתים OFF. 5. כבה מתג ראשי."},
+  {"lang": "he", "q": "בכשל מנוע בטיסה – מה הצעד הראשון?", "opts": ["שדר מצוקה", "הפעל מצתים", "קבע מהירות גלישה מיטבית – 57 קשר", "פרוש מצנח BRS"], "ans": 2, "src": "בד\"ח – חירומים בטיסה", "url": "https://www.ifly.co.il/wp-content/uploads/2024/06/%D7%91%D7%93%D7%97-%D7%94%D7%A8%D7%9E%D7%95%D7%A0%D7%99-%D7%9E%D7%90%D7%99-2024.pdf#page=15", "kw": "57 קשר", "ex": "בד\"ח חירומים: 1. גלישה – 57 קשר. 2. ברז דלק ומשאבה. 3. בחר שטח נחיתה. 4. MAYDAY 121.5."},
+  {"lang": "he", "q": "מה הסדר הנכון של היחלצות מסחרור?", "opts": ["מאזנות נגד, דוושה, סטיק קדימה, שחרור נשיאה", "מצערת סרק, מאזנות אמצע, דוושה נגד, סטיק קדימה, שחרור נשיאה", "סטיק קדימה, דוושה, מאזנות, מצערת", "מצערת מלא, דוושה נגד, סטיק אחורה, מאזנות"], "ans": 1, "src": "בד\"ח – היחלצות מסחרור", "url": "https://www.ifly.co.il/wp-content/uploads/2024/06/%D7%91%D7%93%D7%97-%D7%94%D7%A8%D7%9E%D7%95%D7%A0%D7%99-%D7%9E%D7%90%D7%99-2024.pdf#page=23", "kw": "דוושה", "ex": "בד\"ח: 1. מצערת – סרק. 2. מאזנות – אמצע. 3. דוושה מלאה נגד. 4. סטיק קדימה. 5. שחרור נשיאה. אזהרה: אסור להשתמש במאזנות לעצירת סחרור!"},
+  {"lang": "he", "q": "מה האזהרה לגבי עצירת סחרור?", "opts": ["ניתן לעצור עם מאזנות בלבד", "אסור לנסות לעצור סחרור עם מאזנות", "חייבים מצנח לעצירת סחרור", "ניתן לעצור רק עם כוח מנוע מלא"], "ans": 1, "src": "בד\"ח – היחלצות מסחרור – אזהרה", "url": "https://www.ifly.co.il/wp-content/uploads/2024/06/%D7%91%D7%93%D7%97-%D7%94%D7%A8%D7%9E%D7%95%D7%A0%D7%99-%D7%9E%D7%90%D7%99-2024.pdf#page=23", "kw": "אסור", "ex": "בד\"ח אזהרה: אסור לנסות לעצור סחרור עם מאזנות! שימוש במאזנות בסחרור עלול להחמיר אותו."},
+  {"lang": "he", "q": "מה עושים אם חופה נפתחת בטיסה?", "opts": ["לסגור חופה כמה שיותר מהר", "שליטה על המטוס – עדיפות ראשונה, סגירה שניה", "לנחות מיד בכל שדה", "לשדר מצוקה ולנחות"], "ans": 1, "src": "בד\"ח – חופה נפתחה – אזהרה", "url": "https://www.ifly.co.il/wp-content/uploads/2024/06/%D7%91%D7%93%D7%97-%D7%94%D7%A8%D7%9E%D7%95%D7%A0%D7%99-%D7%9E%D7%90%D7%99-2024.pdf#page=24", "kw": "שליטה", "ex": "בד\"ח אזהרה: אם החופה נפתחה – שמור שליטה במטוס קודם! הפחת למהירות ~65 קשר. סגירה – עדיפות שנייה."},
+  {"lang": "he", "q": "מתי יש לנקז דלק לפני טיסה?", "opts": ["רק לפני הטיסה הראשונה ביום", "לפני כל טיסה, 10 דקות אחרי תדלוק, ואחרי עמידה מעל 3 שעות", "רק לאחר תדלוק", "רק בתנאי לחות גבוהה"], "ans": 1, "src": "בד\"ח – דגשים", "url": "https://www.ifly.co.il/wp-content/uploads/2024/06/%D7%91%D7%93%D7%97-%D7%94%D7%A8%D7%9E%D7%95%D7%A0%D7%99-%D7%9E%D7%90%D7%99-2024.pdf#page=33", "kw": "10 דקות", "ex": "בד\"ח דגשים: נקז דלק לפני כל טיסה, 10 דקות לאחר תדלוק, ואחרי עמידה מעל 3 שעות. כמות: 80–100 מ\"ל."},
+  {"lang": "he", "q": "מה כמות הדלק המינימלית לפני טיסה?", "opts": ["10 ליטר בכל מיכל", "20 ליטר בכל מיכל", "30 ליטר בכל מיכל", "40 ליטר בכל מיכל"], "ans": 2, "src": "בד\"ח – התנעה", "url": "https://www.ifly.co.il/wp-content/uploads/2024/06/%D7%91%D7%93%D7%97-%D7%94%D7%A8%D7%9E%D7%95%D7%A0%D7%99-%D7%9E%D7%90%D7%99-2024.pdf#page=6", "kw": "30 ליטר", "ex": "בד\"ח התנעה: בדוק כמות דלק – לפחות 30 ליטר בכל מיכל לפני המראה."},
+  {"lang": "he", "q": "מה תדר הקשר הראשי של שדה ריאשון לציון?", "opts": ["122.20 MHz", "124.55 MHz", "126.90 MHz", "128.40 MHz"], "ans": 2, "src": "בד\"ח – תדרים", "url": "https://www.ifly.co.il/wp-content/uploads/2024/06/%D7%91%D7%93%D7%97-%D7%94%D7%A8%D7%9E%D7%95%D7%A0%D7%99-%D7%9E%D7%90%D7%99-2024.pdf#page=34", "kw": "126.90", "ex": "בד\"ח תדרים: ריאשון לציון (LLRS) – 126.90 MHz. הרצליה (LLHZ) – 122.20 MHz."},
+  {"lang": "he", "q": "מה תדר שדה הרצליה?", "opts": ["120.10 MHz", "122.20 MHz", "124.55 MHz", "126.90 MHz"], "ans": 1, "src": "בד\"ח – תדרים", "url": "https://www.ifly.co.il/wp-content/uploads/2024/06/%D7%91%D7%93%D7%97-%D7%94%D7%A8%D7%9E%D7%95%D7%A0%D7%99-%D7%9E%D7%90%D7%99-2024.pdf#page=34", "kw": "122.20", "ex": "בד\"ח תדרים: הרצליה (LLHZ) – 122.20 MHz. ריאשון לציון (LLRS) – 126.90 MHz."}
+,
+  {"lang": "en", "q": "What is the MTOW in kg?", "opts": ["520 kg", "550 kg", "575 kg", "600 kg"], "ans": 3, "src": "POH Section 2, page 2-7", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=25", "kw": "600", "ex": "MTOW: 1,320 lbs = 600 kg. This is the LSA category limit. Do not exceed."},
+  {"lang": "en", "q": "What is the standard empty weight in kg?", "opts": ["330 kg", "355 kg", "386 kg", "420 kg"], "ans": 2, "src": "POH Section 2, page 2-7", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=25", "kw": "386", "ex": "Standard empty weight: 850 lbs = approx. 386 kg. May vary with optional equipment installed."},
+  {"lang": "en", "q": "What is the minimum pilot weight in kg?", "opts": ["40 kg", "50 kg", "55 kg", "65 kg"], "ans": 2, "src": "POH Section 2, page 2-7", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=25", "kw": "55", "ex": "Minimum pilot weight: 121 lbs = approx. 55 kg. Below this, CG may exceed the forward limit."},
+  {"lang": "en", "q": "What is the maximum baggage weight in kg?", "opts": ["15 kg", "20 kg", "25 kg", "30 kg"], "ans": 2, "src": "POH Section 2, page 2-7", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=25", "kw": "25", "ex": "Maximum baggage compartment load: 55 lbs = approx. 25 kg. Must be secured within CG limits."},
+  {"lang": "en", "q": "What fuel octane rating is the minimum for the Harmony?", "opts": ["RON 87 (AKI 83)", "RON 91 (AKI 87)", "RON 95 (AKI 91)", "RON 98 (AKI 94)"], "ans": 2, "src": "POH Section 2, page 2-10", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=28", "kw": "RON 95", "ex": "Minimum fuel: RON 95 (AKI 91). Fuels: MOGAS EN 228 Super / Super Plus, or AVGAS 100LL / UL91."},
+  {"lang": "en", "q": "What is the total fuel capacity in liters?", "opts": ["90 liters", "100 liters", "110 liters", "120 liters"], "ans": 3, "src": "POH Section 2, page 2-11", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=29", "kw": "120", "ex": "Total capacity: 31.7 US gal = approx. 120 liters (2 tanks × 60 liters). Usable: 118 liters."},
+  {"lang": "en", "q": "What is the oil temperature green arc (optimal range)?", "opts": ["30–50°C", "50–90°C", "90–110°C", "110–130°C"], "ans": 2, "src": "POH Section 2, page 2-5", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=24", "kw": "90", "ex": "Oil temperature – green arc (optimal): 90–110°C. Lower yellow: 50–90°C. Upper yellow: 110–130°C. Max: 130°C."},
+  {"lang": "en", "q": "What happens to maximum structural cruising speed VNO above the green arc?", "opts": ["Normal operations permitted", "Flight in smooth air only, with caution", "Flight is prohibited", "Speed must be reduced to VS1"], "ans": 1, "src": "POH Section 2, page 2-2", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=21", "kw": "smooth", "ex": "Above VNO 115 KIAS (yellow arc): do not exceed except in smooth air, and then only with increased caution."},
+  {"lang": "en", "q": "What is the maximum load factor at 60° bank angle?", "opts": ["1.5g", "2.0g", "2.5g", "3.0g"], "ans": 1, "src": "POH Section 2, page 2-8", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=26", "kw": "2.0", "ex": "At 60° bank angle, the load factor = 2.0g. Maximum permitted: +4.0g. 60° bank is the maximum approved."},
+  {"lang": "en", "q": "What is the stall speed at 60° bank angle (approximately)?", "opts": ["40 KIAS", "46 KIAS", "48 KIAS", "52 KIAS"], "ans": 2, "src": "POH Section 2, page 2-8", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=26", "kw": "48", "ex": "At 60° bank (2.0g load factor), stall speed increases by factor √2 from VS1: 34 × 1.41 ≈ 48 KIAS."},
+  {"lang": "en", "q": "What colour is the lower limit mark on the oil pressure gauge?", "opts": ["Yellow line", "Green line", "Red line", "Blue line"], "ans": 2, "src": "POH Section 2, page 2-5", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=24", "kw": "red", "ex": "Oil pressure – lower red line (minimum): 0.8 bar (12 PSI). Land immediately if pressure falls below this."},
+  {"lang": "en", "q": "How many ignition systems (LANE A and B) does the ROTAX 912 iS have?", "opts": ["1 magneto system", "2 independent ignition lanes (LANE A and LANE B)", "3 ignition circuits", "1 electronic + 1 magneto"], "ans": 1, "src": "POH Section 7, page 7-7", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=117", "kw": "LANE", "ex": "ROTAX 912 iS has 2 independent electronic ignition lanes: LANE A and LANE B. Both must be ON for flight."},
+  {"lang": "en", "q": "What is checked during the magneto (LANE) check before take-off?", "opts": ["Only RPM drop per lane", "RPM drop per lane (max 300 RPM) and RPM difference between lanes (max 150 RPM)", "Only that both lanes work", "Oil pressure response"], "ans": 1, "src": "POH Section 4, page 4-6", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=58", "kw": "300", "ex": "LANE check at 4,000 RPM: max RPM drop per lane: 300 RPM. Max difference between LANE A and LANE B: 150 RPM."},
+  {"lang": "en", "q": "What is the approved fuel for the Harmony besides MOGAS RON 95?", "opts": ["AVGAS 80", "AVGAS 100LL and AVGAS UL91", "Jet A-1", "Diesel"], "ans": 1, "src": "POH Section 2, page 2-11", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=29", "kw": "100LL", "ex": "Approved aviation fuel: AVGAS 100LL (ASTM D910) and AVGAS UL91 (ASTM D7547). Note: 100LL causes increased valve seat wear."},
+  {"lang": "en", "q": "What is the approximate landing roll in meters?", "opts": ["100 m", "150 m", "198 m", "300 m"], "ans": 2, "src": "POH Section 5, page 5-12", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=86", "kw": "198", "ex": "Landing roll (MTOW, sea level, ISA, flaps 50°): approx. 650 ft = 198 m."},
+  {"lang": "en", "q": "What is the approximate take-off roll in meters?", "opts": ["150 m", "200 m", "250 m", "350 m"], "ans": 2, "src": "POH Section 5, page 5-4", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=78", "kw": "250", "ex": "Take-off roll (MTOW, sea level, ISA, hard surface, no wind): approx. 820 ft = 250 m."},
+  {"lang": "en", "q": "What is the wing span (from POH)?", "opts": ["8.00 m", "8.75 m", "9.28 m", "10.00 m"], "ans": 2, "src": "POH Section 1, page 1-5", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=15", "kw": "9.28", "ex": "Wing span: 30.45 ft = 9.28 m. Wing area: 111.47 sq.ft = 10.35 m². MAC: 46.67 in = 1,185 mm."},
+  {"lang": "en", "q": "What is the overall length in meters?", "opts": ["5.50 m", "5.90 m", "6.25 m", "7.00 m"], "ans": 2, "src": "POH Section 1, page 1-5", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=15", "kw": "6.25", "ex": "Overall length: 20.51 ft = 6.25 m. Height: 8.12 ft = 2.47 m. Width: 3.55 ft = 1.08 m."},
+  {"lang": "en", "q": "What is the height of the aircraft in meters?", "opts": ["1.98 m", "2.19 m", "2.47 m", "2.74 m"], "ans": 2, "src": "POH Section 1, page 1-5", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=15", "kw": "2.47", "ex": "Fuselage Height: 8.12 ft. Length: 20.51 ft. Width: 3.55 ft. (POH Section 1-5, under Main Technical Data)"},
+  {"lang": "en", "q": "What is the aspect ratio of the wing?", "opts": ["5.5", "6.8", "8.31", "10.2"], "ans": 2, "src": "POH Section 1, page 1-5", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=15", "kw": "8.31", "ex": "Wing aspect ratio: span² / area = 30.45² / 111.47 = 8.31. Higher aspect ratio means better glide performance."},
+  {"lang": "en", "q": "What is AVGAS UL91?", "opts": ["High-lead aviation fuel", "Unleaded aviation gasoline approved for ROTAX 912 iS", "Jet fuel variant", "Automotive premium fuel"], "ans": 1, "src": "POH Section 2, page 2-11", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=29", "kw": "UL91", "ex": "AVGAS UL91: unleaded aviation gasoline per ASTM D7547. Approved for ROTAX 912 iS. Preferred over 100LL when available."},
+  {"lang": "en", "q": "What is the oil performance classification required?", "opts": ["API SG or higher", "API SJ or higher", "API SM or higher", "Any 4-stroke oil"], "ans": 1, "src": "POH Section 2, page 2-14", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=30", "kw": "SJ", "ex": "Oil specification: performance classification SJ or higher according to API. See current Service Instruction SI-912-016 for approved grades."},
+  {"lang": "en", "q": "What does the voltmeter lower red line (10.0V) indicate?", "opts": ["Normal battery", "Low voltage warning – electrical system fault", "Battery fully charged", "Generator running"], "ans": 1, "src": "POH Section 2, page 2-5", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=24", "kw": "10.0", "ex": "Voltmeter – lower red line: 10.0V. Yellow arc below normal: 10.0–12.4V. Green arc (normal): 12.4–15.1V."},
+  {"lang": "en", "q": "What is the voltmeter yellow arc (lower caution range)?", "opts": ["8.0–10.0V", "10.0–12.4V", "12.4–15.1V", "15.1–16.0V"], "ans": 1, "src": "POH Section 2, page 2-5", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=24", "kw": "10.0", "ex": "Voltmeter – lower yellow arc (caution): 10.0–12.4V. Normal green arc: 12.4–15.1V. Min red line: 10.0V."},
+  {"lang": "en", "q": "What is the RPM red line (maximum)?", "opts": ["5,200 RPM", "5,500 RPM", "5,800 RPM", "6,000 RPM"], "ans": 2, "src": "POH Section 2, page 2-5", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=24", "kw": "5,800", "ex": "RPM red line (absolute maximum): 5,800 RPM. This is MTP speed – maximum 5 minutes. Never exceed."},
+  {"lang": "en", "q": "What is the CHT green arc lower limit?", "opts": ["0°C", "30°C", "50°C", "80°C"], "ans": 2, "src": "POH Section 2, page 2-5", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=24", "kw": "50", "ex": "CHT – green arc lower limit: 50°C. Upper limit (red line max): 120°C. No lower red line – care needed on cold start."},
+  {"lang": "en", "q": "What type of trim system does the Harmony have?", "opts": ["Rudder trim only", "Electric pitch trim (elevator trim tab)", "Manual trim wheel", "No trim system"], "ans": 1, "src": "POH Section 7, page 7-6", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=116", "kw": "electric", "ex": "Pitch trim: electric trim tab on the elevator. Controlled by a switch in the cockpit. Set to neutral before take-off."},
+  {"lang": "en", "q": "What is the Harmony's certification standard?", "opts": ["FAR Part 23", "EASA CS-LSA", "ASTM F2245 (Light Sport Aircraft)", "JAR-VLA"], "ans": 2, "src": "POH Section 1, page 1-3", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=13", "kw": "ASTM F2245", "ex": "Harmony LSA complies with ASTM F2245: Standard Specification for Design and Performance of a Light Sport Airplane."},
+  {"lang": "en", "q": "What is the maximum number of occupants in the Harmony?", "opts": ["1", "2", "3", "4"], "ans": 1, "src": "POH Section 2, page 2-15", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=33", "kw": "2", "ex": "Maximum occupants including pilot: 2 persons. Side-by-side seating. Minimum pilot weight: 55 kg."},
+  {"lang": "en", "q": "Where is the reference datum for CG located?", "opts": ["At the propeller flange", "At the firewall", "56.15 mm (2.21 in) aft of the wing leading edge", "At the main gear axle"], "ans": 2, "src": "POH Section 2, page 2-8", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=26", "kw": "56.15", "ex": "CG reference datum: 56.15 mm (2.21 in) aft of wing leading edge. MAC = 46.67 in (1,185.5 mm)."},
+  {"lang": "en", "q": "What does a spin recovery WARNING specifically state?", "opts": ["Use ailerons to stop rotation", "Do not use ailerons to stop rotation", "Use full back stick", "Apply full throttle"], "ans": 1, "src": "POH Section 3, page 3-14", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=48", "kw": "ailerons", "ex": "WARNING (POH 3.11): Do not use ailerons to stop the rotation – this may aggravate the spin. Use rudder only."},
+  {"lang": "en", "q": "In engine failure in flight – what is checked after establishing glide?", "opts": ["Only fuel selector", "Check altitude for options: engine restart above 250 ft, 180° turn above 400 ft", "Only transmit MAYDAY", "Open canopy"], "ans": 1, "src": "POH Section 3, page 3-5", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=39", "kw": "altitude", "ex": "Engine failure in flight (POH 3.3.3): 1. Glide 57 KIAS. 2. Check altitude for options. 3. Try restart (above 250 ft) or select landing area."},
+  {"lang": "en", "q": "What is the overvoltage procedure?", "opts": ["Turn off the battery", "Reduce electrical load and land", "Turn OFF AUX GEN switch (if installed), then reduce load, land soon", "Cycle the LANE switches"], "ans": 2, "src": "POH Section 3, page 3-12", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=46", "kw": "AUX", "ex": "Overvoltage (POH 3.10.5): Turn OFF AUX GEN switch if installed. Reduce electrical load. Land at nearest suitable airfield."},
+  {"lang": "en", "q": "At what altitude loss can the engine be restarted after engine failure (in-flight)?", "opts": ["Up to 500 ft", "Up to 750 ft", "Up to 1,000 ft", "Up to 1,500 ft"], "ans": 2, "src": "POH Section 3, page 3-5", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=39", "kw": "1,000", "ex": "POH 3.4 Note: altitude loss during engine starting in flight can reach up to 1,000 ft. Ensure sufficient altitude before attempting restart."},
+  {"lang": "he", "q": "מה לחץ שמן הגבול התחתון (קו אדום)?", "opts": ["0.4 bar (6 PSI)", "0.8 bar (12 PSI)", "1.5 bar (22 PSI)", "2.0 bar (29 PSI)"], "ans": 1, "src": "בד\"ח – ספר המטוס – מגבלות", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=23", "kw": "0.8 bar", "ex": "לחץ שמן – קו אדום תחתון: 0.8 bar (12 PSI). נחת מיד אם לחץ השמן יורד מתחת לכך."},
+  {"lang": "he", "q": "מה טמפרטורת שמן אופטימלית (גבול ירוק)?", "opts": ["50–90°C", "70–100°C", "90–110°C", "110–130°C"], "ans": 2, "src": "בד\"ח – ספר המטוס – מגבלות", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=24", "kw": "90–110°C", "ex": "טמפרטורת שמן – טווח ירוק (אופטימלי): 90–110°C. צהוב תחתון: 50–90°C. צהוב עליון: 110–130°C."},
+  {"lang": "he", "q": "מה לחץ דלק הגבול העליון (קו אדום)?", "opts": ["3.0 bar (44 PSI)", "3.2 bar (46 PSI)", "3.5 bar (51 PSI)", "4.0 bar (58 PSI)"], "ans": 2, "src": "בד\"ח – ספר המטוס – מגבלות", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=24", "kw": "3.5 bar", "ex": "לחץ דלק – קו אדום עליון: 3.5 bar (51 PSI). טווח ירוק (תקין): 2.8–3.2 bar (40.6–46.4 PSI)."},
+  {"lang": "he", "q": "כמה ליטר בכל מיכל דלק?", "opts": ["45 ליטר (11.9 גלון)", "50 ליטר (13.2 גלון)", "55 ליטר (14.5 גלון)", "60 ליטר (15.9 גלון)"], "ans": 3, "src": "בד\"ח – נתונים טכניים", "url": "https://www.ifly.co.il/wp-content/uploads/2024/06/%D7%91%D7%93%D7%97-%D7%94%D7%A8%D7%9E%D7%95%D7%A0%D7%99-%D7%9E%D7%90%D7%99-2024.pdf#page=28", "kw": "60", "ex": "קיבולת מיכל דלק: 15.85 גלון אמריקאי = כ-60 ליטר. סה\"כ שני המיכלים: 120 ליטר (118 ליטר שמישים)."},
+  {"lang": "he", "q": "מהו משקל המראה המקסימלי בק\"ג?", "opts": ["520 ק\"ג", "550 ק\"ג", "575 ק\"ג", "600 ק\"ג"], "ans": 3, "src": "בד\"ח – נתונים טכניים", "url": "https://www.ifly.co.il/wp-content/uploads/2024/06/%D7%91%D7%93%D7%97-%D7%94%D7%A8%D7%9E%D7%95%D7%A0%D7%99-%D7%9E%D7%90%D7%99-2024.pdf#page=26", "kw": "600", "ex": "משקל המראה מקסימלי (MTOW): 1,320 ליברות = 600 ק\"ג. זוהי מגבלת קטגוריית LSA."},
+  {"lang": "he", "q": "מה משקל ריקן תקני בק\"ג?", "opts": ["330 ק\"ג", "355 ק\"ג", "386 ק\"ג", "420 ק\"ג"], "ans": 2, "src": "בד\"ח – נתונים טכניים", "url": "https://www.ifly.co.il/wp-content/uploads/2024/06/%D7%91%D7%93%D7%97-%D7%94%D7%A8%D7%9E%D7%95%D7%A0%D7%99-%D7%9E%D7%90%D7%99-2024.pdf#page=26", "kw": "386", "ex": "משקל ריקן תקני: 850 ליברות = כ-386 ק\"ג. עשוי להשתנות בהתאם לציוד אופציונלי."},
+  {"lang": "he", "q": "מה טמפרטורת CHT (ראש צילינדר) המקסימלית בטיסה?", "opts": ["100°C", "110°C", "120°C", "135°C"], "ans": 2, "src": "בד\"ח – ספר המטוס – מגבלות", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=24", "kw": "120°C", "ex": "CHT מקסימלי (קו אדום): 120°C. שים לב לטמפ' CHT במיוחד בטיפוס ממושך."},
+  {"lang": "he", "q": "מה טמפרטורת שמן מקסימלית?", "opts": ["110°C", "120°C", "130°C", "140°C"], "ans": 2, "src": "בד\"ח – ספר המטוס – מגבלות", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=23", "kw": "130°C", "ex": "טמפרטורת שמן מקסימלית (קו אדום): 130°C (266°F). טווח ירוק: 90–110°C."},
+  {"lang": "he", "q": "מה מהירות הגלישה המיטבית ללא מנוע?", "opts": ["54 קשר", "57 קשר", "60 קשר", "65 קשר"], "ans": 1, "src": "בד\"ח – חירומים בטיסה", "url": "https://www.ifly.co.il/wp-content/uploads/2024/06/%D7%91%D7%93%D7%97-%D7%94%D7%A8%D7%9E%D7%95%D7%A0%D7%99-%D7%9E%D7%90%D7%99-2024.pdf#page=15", "kw": "57 קשר", "ex": "מהירות גלישה מיטבית (מדפים סגורים): 57 קשר (66 mph). מהירות זו מספקת את יחס הגלישה המקסימלי."},
+  {"lang": "he", "q": "מה עושים עם משאבת הדלק החשמלית לפני נחיתה?", "opts": ["משאירים כבויה", "מפעילים אותה", "סוגרים ברז דלק", "לא חשוב"], "ans": 1, "src": "בד\"ח – לפני נחיתה", "url": "https://www.ifly.co.il/wp-content/uploads/2024/06/%D7%91%D7%93%D7%97-%D7%94%D7%A8%D7%9E%D7%95%D7%A0%D7%99-%D7%9E%D7%90%D7%99-2024.pdf#page=11", "kw": "מפעילים", "ex": "בד\"ח לפני נחיתה: הפעל משאבת דלק חשמלית. מספקת לחץ דלק גיבוי בשלב הנחיתה."},
+  {"lang": "he", "q": "מה צריך לכלול בבדיקת לפני טיסה לגבי משקל ואיזון?", "opts": ["לא צריך לבדוק", "לחשב שהמטוס בגבולות המשקל ומרכז הכובד", "רק לוודא שאין מטען", "לבדוק רק משקל כולל"], "ans": 1, "src": "בד\"ח – דגשים", "url": "https://www.ifly.co.il/wp-content/uploads/2024/06/%D7%91%D7%93%D7%97-%D7%94%D7%A8%D7%9E%D7%95%D7%A0%D7%99-%D7%9E%D7%90%D7%99-2024.pdf#page=33", "kw": "משקל ואיזון", "ex": "בד\"ח דגשים: לפני כל טיסה – חשב ובדוק שהמטוס בגבולות המשקל ומרכז הכובד (W&B)."},
+  {"lang": "he", "q": "מה עושים עם מצתים (LANE A, B) בסיום הטיסה?", "opts": ["משאירים ON", "מכבים בסדר: BOTH לאחר גרירה", "מכבים מיד לאחר נגיעה", "מכבים ב-OFF לפני כיבוי מתג ראשי"], "ans": 3, "src": "בד\"ח – הדממה", "url": "https://www.ifly.co.il/wp-content/uploads/2024/06/%D7%91%D7%93%D7%97-%D7%94%D7%A8%D7%9E%D7%95%D7%A0%D7%99-%D7%9E%D7%90%D7%99-2024.pdf#page=13", "kw": "OFF", "ex": "בד\"ח הדממה: מצתים (LANE A, B) – כבה ל-OFF. לאחר מכן כבה מתג ראשי."},
+  {"lang": "he", "q": "מה ה-RPM בסרק לפני כיבוי מנוע בהדממה?", "opts": ["1,000 RPM", "1,400 RPM", "2,000 RPM", "3,000 RPM"], "ans": 1, "src": "בד\"ח – הדממה", "url": "https://www.ifly.co.il/wp-content/uploads/2024/06/%D7%91%D7%93%D7%97-%D7%94%D7%A8%D7%9E%D7%95%D7%A0%D7%99-%D7%9E%D7%90%D7%99-2024.pdf#page=13", "kw": "1,400", "ex": "בד\"ח הדממה: המתן ל-1,400 RPM לפני כיבוי. כיבוי ב-RPM גבוה עלול לגרום לנזק."},
+  {"lang": "he", "q": "מה עושים כשמנוע רועד בצורה חריגה?", "opts": ["מגבירים מצערת", "מורידים כוח למינימום הנדרש ונוחתים בזהירות", "מכבים מנוע", "מורידים מדפים"], "ans": 1, "src": "בד\"ח – מנוע רועד", "url": "https://www.ifly.co.il/wp-content/uploads/2024/06/%D7%91%D7%93%D7%97-%D7%94%D7%A8%D7%9E%D7%95%D7%A0%D7%99-%D7%9E%D7%90%D7%99-2024.pdf#page=24", "kw": "מינימום", "ex": "בד\"ח מנוע רועד: מצא נקודת מצערת עם רעידות מינימליות, שדר מצוקה, בצע נחיתת זהירות."}
+,
+  {"lang": "en", "q": "What is the MTOW in kg?", "opts": ["520 kg", "550 kg", "575 kg", "600 kg"], "ans": 3, "src": "POH Section 2, page 2-7", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=25", "kw": "600", "ex": "MTOW: 1,320 lbs = 600 kg. LSA category limit. Do not exceed."},
+  {"lang": "en", "q": "What is the standard empty weight in kg?", "opts": ["330 kg", "355 kg", "386 kg", "420 kg"], "ans": 2, "src": "POH Section 2, page 2-7", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=25", "kw": "386", "ex": "Standard empty weight: 850 lbs = approx. 386 kg."},
+  {"lang": "en", "q": "What is the minimum pilot weight in kg?", "opts": ["40 kg", "50 kg", "55 kg", "65 kg"], "ans": 2, "src": "POH Section 2, page 2-7", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=25", "kw": "55", "ex": "Minimum pilot weight: 121 lbs = approx. 55 kg. Below this CG may exceed forward limit."},
+  {"lang": "en", "q": "What is the max baggage weight in kg?", "opts": ["15 kg", "20 kg", "25 kg", "30 kg"], "ans": 2, "src": "POH Section 2, page 2-7", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=25", "kw": "25", "ex": "Maximum baggage: 55 lbs = approx. 25 kg. Must stay within CG limits."},
+  {"lang": "en", "q": "What is the total fuel capacity in liters?", "opts": ["90 L", "100 L", "110 L", "120 L"], "ans": 3, "src": "POH Section 2, page 2-11", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=29", "kw": "120", "ex": "Total capacity: 31.7 US gal = approx. 120 liters (2 tanks × 60 L). Usable: 118 L."},
+  {"lang": "en", "q": "What is the fuel per tank in liters?", "opts": ["45 L (11.9 US gal)", "50 L (13.2 US gal)", "55 L (14.5 US gal)", "60 L (15.9 US gal)"], "ans": 3, "src": "POH Section 2, page 2-11", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=29", "kw": "60", "ex": "Each tank capacity: 15.85 US gal = approx. 60 liters. Total: 120 L. Usable: 118 L."},
+  {"lang": "en", "q": "What is the minimum fuel octane rating?", "opts": ["RON 87 (AKI 83)", "RON 91 (AKI 87)", "RON 95 (AKI 91)", "RON 98 (AKI 94)"], "ans": 2, "src": "POH Section 2, page 2-10", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=28", "kw": "RON 95", "ex": "Minimum fuel: RON 95 (AKI 91). Approved: MOGAS EN 228 Super/Plus, AVGAS 100LL, AVGAS UL91."},
+  {"lang": "en", "q": "What is the oil temperature green arc?", "opts": ["30–50°C", "50–90°C", "90–110°C", "110–130°C"], "ans": 2, "src": "POH Section 2, page 2-5", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=24", "kw": "90", "ex": "Oil temperature – green arc (optimal): 90–110°C. Lower yellow: 50–90°C. Upper yellow: 110–130°C."},
+  {"lang": "en", "q": "What is the aspect ratio of the wing?", "opts": ["5.5", "6.8", "8.31", "10.2"], "ans": 2, "src": "POH Section 1, page 1-5", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=15", "kw": "8.31", "ex": "Wing aspect ratio: span²/area = 30.45²/111.47 = 8.31."},
+  {"lang": "en", "q": "What is the wing span (from POH)?", "opts": ["8.00 m", "8.75 m", "9.28 m", "10.00 m"], "ans": 2, "src": "POH Section 1, page 1-5", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=15", "kw": "9.28", "ex": "Wing span: 30.45 ft = 9.28 m. Wing area: 111.47 sq.ft = 10.35 m²."},
+  {"lang": "en", "q": "What is the overall length of the Harmony (from POH)?", "opts": ["5.50 m", "5.90 m", "6.25 m", "7.00 m"], "ans": 2, "src": "POH Section 1, page 1-5", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=15", "kw": "6.25", "ex": "Overall length: 20.51 ft = 6.25 m."},
+  {"lang": "en", "q": "What is the fuselage height of the Harmony (from POH)?", "opts": ["1.98 m", "2.19 m", "2.47 m", "2.74 m"], "ans": 2, "src": "POH Section 1, page 1-5", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=15", "kw": "2.47", "ex": "Fuselage Height: 8.12 ft. Length: 20.51 ft. Width: 3.55 ft."},
+  {"lang": "en", "q": "How many independent ignition lanes does the ROTAX 912 iS have?", "opts": ["1", "2", "3", "4"], "ans": 1, "src": "POH Section 7, page 7-7", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=117", "kw": "LANE", "ex": "ROTAX 912 iS: 2 independent electronic ignition lanes – LANE A and LANE B. Both must be ON for flight."},
+  {"lang": "en", "q": "What is the AVGAS UL91?", "opts": ["High-lead fuel", "Unleaded aviation gasoline per ASTM D7547", "Jet fuel", "Diesel"], "ans": 1, "src": "POH Section 2, page 2-11", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=29", "kw": "UL91", "ex": "AVGAS UL91: unleaded aviation gasoline per ASTM D7547. Approved for ROTAX 912 iS."},
+  {"lang": "en", "q": "What is the recommended free space to leave in each tank?", "opts": ["0.5 US gal (2 L)", "1.0 US gal (4 L)", "2.11 US gal (8 L)", "3.0 US gal (11 L)"], "ans": 2, "src": "POH Section 2, page 2-11", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=29", "kw": "2.11", "ex": "Leave approx. 2.11 US gal (8 L) free space per tank to allow for thermal fuel expansion."},
+  {"lang": "en", "q": "What is the voltmeter lower caution (yellow) range?", "opts": ["8.0–10.0V", "10.0–12.4V", "12.4–15.1V", "15.1–16.0V"], "ans": 1, "src": "POH Section 2, page 2-5", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=24", "kw": "10.0", "ex": "Voltmeter – lower yellow (caution): 10.0–12.4V. Green (normal): 12.4–15.1V. Red min: 10.0V."},
+  {"lang": "en", "q": "What is the RPM red line maximum?", "opts": ["5,200 RPM", "5,500 RPM", "5,800 RPM", "6,000 RPM"], "ans": 2, "src": "POH Section 2, page 2-5", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=24", "kw": "5,800", "ex": "RPM absolute maximum (red line): 5,800 RPM. This is MTP speed – never exceed, max 5 minutes."},
+  {"lang": "en", "q": "What is the CHT green arc lower limit?", "opts": ["0°C", "30°C", "50°C", "80°C"], "ans": 2, "src": "POH Section 2, page 2-5", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=24", "kw": "50", "ex": "CHT – green arc: 50–120°C. Red line maximum: 120°C. Monitor especially during prolonged climbs."},
+  {"lang": "en", "q": "What type of trim does the Harmony use?", "opts": ["Manual trim wheel", "Electric pitch trim tab", "Rudder trim only", "No trim"], "ans": 1, "src": "POH Section 7, page 7-6", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=116", "kw": "electric", "ex": "Pitch trim: electric trim tab on the elevator. Set to neutral before take-off."},
+  {"lang": "en", "q": "What certification standard does the Harmony comply with?", "opts": ["FAR Part 23", "EASA CS-LSA", "ASTM F2245", "JAR-VLA"], "ans": 2, "src": "POH Section 1, page 1-3", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=13", "kw": "ASTM F2245", "ex": "Harmony LSA complies with ASTM F2245: Standard Specification for Design and Performance of a Light Sport Airplane."},
+  {"lang": "en", "q": "What is the oil performance classification required?", "opts": ["API SG or higher", "API SJ or higher", "API SM or higher", "Any 4-stroke oil"], "ans": 1, "src": "POH Section 2, page 2-14", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=30", "kw": "SJ", "ex": "Oil: performance classification SJ or higher per API. See current Service Instruction SI-912-016."},
+  {"lang": "en", "q": "What does a CHT red line on the gauge mean?", "opts": ["Normal operating range", "Caution range", "Do not exceed – maximum limit", "Minimum limit"], "ans": 2, "src": "POH Section 2, page 2-5", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=24", "kw": "maximum", "ex": "Red line = absolute maximum limit. CHT red line: 120°C (248°F). Never exceed."},
+  {"lang": "en", "q": "What is the flap actuator type?", "opts": ["Manual mechanical lever", "Hydraulic", "Electric switch", "Pneumatic"], "ans": 2, "src": "POH Section 7, page 7-5", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=115", "kw": "Electric", "ex": "Flaps: electrically actuated. 4 positions: 0° (up), 15° (take-off), 30°, 50° (landing)."},
+  {"lang": "en", "q": "What are the 4 flap positions?", "opts": ["0°, 10°, 20°, 30°", "0°, 15°, 30°, 50°", "0°, 15°, 25°, 45°", "0°, 20°, 35°, 50°"], "ans": 1, "src": "POH Section 7, page 7-5", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=115", "kw": "15", "ex": "Flap positions: 0° retracted, 15° take-off (pos.1), 30° (pos.2), 50° landing LANDING II (pos.3)."},
+  {"lang": "en", "q": "What is the electrical system voltage?", "opts": ["6V DC", "12V DC", "24V DC", "28V DC"], "ans": 1, "src": "POH Section 7, page 7-12", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=122", "kw": "12V", "ex": "Electrical system: 12V DC. Generator + battery (ACCU). Normal voltage: 12.4–15.1V."},
+  {"lang": "en", "q": "What is the approximate glide ratio?", "opts": ["6:1", "8:1", "10:1", "12:1"], "ans": 3, "src": "POH Section 3, page 3-8", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=42", "kw": "12", "ex": "Glide ratio: approximately 12:1 at best glide speed 57 KIAS, flaps retracted."},
+  {"lang": "en", "q": "What altitude loss is possible during in-flight engine restart?", "opts": ["200 ft", "500 ft", "1,000 ft", "1,500 ft"], "ans": 2, "src": "POH Section 3, page 3-5", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=39", "kw": "1,000", "ex": "POH 3.4: altitude loss during in-flight engine starting can reach up to 1,000 ft. Ensure sufficient altitude."},
+  {"lang": "en", "q": "What is the take-off distance over 50 ft obstacle (meters)?", "opts": ["152 m", "250 m", "500 m", "610 m"], "ans": 2, "src": "POH Section 5, page 5-4", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=78", "kw": "500", "ex": "Take-off distance over 50 ft obstacle: 1,640 ft = approx. 500 m (MTOW, sea level, ISA, no wind)."},
+  {"lang": "en", "q": "What is the maximum rate of climb in ft/min?", "opts": ["450 ft/min (2.3 m/s)", "580 ft/min (2.9 m/s)", "700 ft/min (3.6 m/s)", "900 ft/min (4.6 m/s)"], "ans": 2, "src": "POH Section 5, page 5-2", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=76", "kw": "700", "ex": "Max rate of climb at sea level (MTP, MTOW, ISA): approx. 700 ft/min (3.6 m/s) at Vy 60 KIAS."},
+  {"lang": "en", "q": "What is the service ceiling in feet?", "opts": ["6,000 ft", "8,000 ft", "10,000 ft", "12,000 ft"], "ans": 2, "src": "POH Section 5, page 5-2", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=76", "kw": "10,000", "ex": "Service ceiling (100 ft/min remaining climb): approx. 10,000 ft (3,048 m), MTOW, ISA."},
+  {"lang": "en", "q": "What is the maximum range in NM?", "opts": ["450 NM", "520 NM", "630 NM", "700 NM"], "ans": 2, "src": "POH Section 1, page 1-8", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=18", "kw": "630", "ex": "Maximum range: 630 NM at 2,000 ft, 75% MCP, with 45-minute reserve."},
+  {"lang": "en", "q": "What is the spin recovery WARNING?", "opts": ["Use ailerons to stop rotation", "Do not use ailerons – use rudder to stop rotation", "Apply full throttle", "Use full back stick"], "ans": 1, "src": "POH Section 3, page 3-14", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=48", "kw": "ailerons", "ex": "WARNING (POH 3.11): Do NOT use ailerons to stop the rotation – this may aggravate the spin."},
+  {"lang": "en", "q": "What altitude loss per spin revolution?", "opts": ["100–200 ft", "300–400 ft", "500–1,000 ft", "1,000–2,000 ft"], "ans": 2, "src": "POH Section 3, page 3-14", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=48", "kw": "500", "ex": "Altitude loss per spin revolution can reach 500–1,000 ft. Recover immediately at first indication."},
+  {"lang": "en", "q": "What is the fuselage width of the Harmony (from POH)?", "opts": ["0.76 m", "0.91 m", "1.08 m", "1.22 m"], "ans": 2, "src": "POH Section 1, page 1-5", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=15", "kw": "1.08", "ex": "Fuselage width: 3.55 ft = 1.08 m. Max cockpit width: 3.9 ft = 1.19 m."},
+  {"lang": "en", "q": "What is the wheel base in meters?", "opts": ["1.07 m", "1.22 m", "1.45 m", "1.68 m"], "ans": 2, "src": "POH Section 1, page 1-6", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=16", "kw": "1.45", "ex": "Wheel base (nose to main gear): 4.76 ft = 1.45 m. Wheel track (main gear): 6.4 ft = 1.95 m."},
+  {"lang": "en", "q": "What is the wheel track in meters?", "opts": ["1.45 m", "1.68 m", "1.95 m", "2.19 m"], "ans": 2, "src": "POH Section 1, page 1-6", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=16", "kw": "1.95", "ex": "Wheel track (main gear width): 6.4 ft = 1.95 m. Wheel base: 4.76 ft = 1.45 m."},
+  {"lang": "en", "q": "What is the HTU span in meters?", "opts": ["2.13 m", "2.44 m", "2.77 m", "3.05 m"], "ans": 2, "src": "POH Section 1, page 1-5", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=15", "kw": "2.77", "ex": "HTU span: 9.09 ft = 2.77 m. HTU area: 20.67 sq.ft = 1.92 m²."},
+  {"lang": "en", "q": "What is the VTU height in meters?", "opts": ["0.91 m", "1.08 m", "1.28 m", "1.52 m"], "ans": 2, "src": "POH Section 1, page 1-5", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=15", "kw": "1.28", "ex": "VTU height: 4.21 ft = 1.28 m. VTU area: 11.2 sq.ft = 1.04 m²."},
+  {"lang": "he", "q": "מה לחץ שמן הגבול התחתון (קו אדום)?", "opts": ["0.4 bar (6 PSI)", "0.8 bar (12 PSI)", "1.5 bar (22 PSI)", "2.0 bar (29 PSI)"], "ans": 1, "src": "בד\"ח – ספר המטוס – מגבלות", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=23", "kw": "0.8 bar", "ex": "לחץ שמן – קו אדום תחתון: 0.8 bar (12 PSI). נחת מיד אם לחץ השמן יורד מתחת לכך."},
+  {"lang": "he", "q": "מה טמפרטורת שמן המקסימלית?", "opts": ["110°C", "120°C", "130°C", "140°C"], "ans": 2, "src": "בד\"ח – ספר המטוס – מגבלות", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=23", "kw": "130°C", "ex": "טמפרטורת שמן מקסימלית (קו אדום): 130°C (266°F). טווח ירוק: 90–110°C."},
+  {"lang": "he", "q": "מה טמפרטורת CHT המקסימלית?", "opts": ["100°C", "110°C", "120°C", "135°C"], "ans": 2, "src": "בד\"ח – ספר המטוס – מגבלות", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=24", "kw": "120°C", "ex": "CHT מקסימלי (קו אדום): 120°C (248°F). שים לב לטמפ' CHT במיוחד בטיפוס ממושך."},
+  {"lang": "he", "q": "מה לחץ דלק הגבול העליון (קו אדום)?", "opts": ["3.0 bar (44 PSI)", "3.2 bar (46 PSI)", "3.5 bar (51 PSI)", "4.0 bar (58 PSI)"], "ans": 2, "src": "בד\"ח – ספר המטוס – מגבלות", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=24", "kw": "3.5 bar", "ex": "לחץ דלק – קו אדום עליון: 3.5 bar (51 PSI). טווח ירוק: 2.8–3.2 bar (40.6–46.4 PSI)."},
+  {"lang": "he", "q": "מהו משקל המראה המקסימלי בק\"ג?", "opts": ["520 ק\"ג", "550 ק\"ג", "575 ק\"ג", "600 ק\"ג"], "ans": 3, "src": "בד\"ח – נתונים טכניים", "url": "https://www.ifly.co.il/wp-content/uploads/2024/06/%D7%91%D7%93%D7%97-%D7%94%D7%A8%D7%9E%D7%95%D7%A0%D7%99-%D7%9E%D7%90%D7%99-2024.pdf#page=26", "kw": "600", "ex": "MTOW: 1,320 ליברות = 600 ק\"ג. מגבלת קטגוריית LSA."},
+  {"lang": "he", "q": "כמה ליטר בכל מיכל דלק?", "opts": ["45 ליטר (11.9 גלון)", "50 ליטר (13.2 גלון)", "55 ליטר (14.5 גלון)", "60 ליטר (15.9 גלון)"], "ans": 3, "src": "בד\"ח – נתונים טכניים", "url": "https://www.ifly.co.il/wp-content/uploads/2024/06/%D7%91%D7%93%D7%97-%D7%94%D7%A8%D7%9E%D7%95%D7%A0%D7%99-%D7%9E%D7%90%D7%99-2024.pdf#page=28", "kw": "60", "ex": "קיבולת מיכל: 15.85 גלון = כ-60 ליטר. סה\"כ: 120 ליטר. שמישים: 118 ליטר."},
+  {"lang": "he", "q": "מה טמפרטורת שמן אופטימלית (טווח ירוק)?", "opts": ["50–90°C", "70–100°C", "90–110°C", "110–130°C"], "ans": 2, "src": "בד\"ח – ספר המטוס – מגבלות", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=24", "kw": "90–110°C", "ex": "טמפרטורת שמן – טווח ירוק (אופטימלי): 90–110°C. מינימום לפני המראה: 50°C."},
+  {"lang": "he", "q": "מה מהירות הגלישה המיטבית ללא מנוע?", "opts": ["54 קשר", "57 קשר", "60 קשר", "65 קשר"], "ans": 1, "src": "בד\"ח – חירומים בטיסה", "url": "https://www.ifly.co.il/wp-content/uploads/2024/06/%D7%91%D7%93%D7%97-%D7%94%D7%A8%D7%9E%D7%95%D7%A0%D7%99-%D7%9E%D7%90%D7%99-2024.pdf#page=15", "kw": "57 קשר", "ex": "מהירות גלישה מיטבית (מדפים סגורים): 57 קשר (66 mph). מספקת יחס גלישה מקסימלי."},
+  {"lang": "he", "q": "מה ה-RPM המקסימלי בסרק בהסעה?", "opts": ["2,000 RPM", "3,000 RPM", "4,000 RPM", "5,000 RPM"], "ans": 1, "src": "בד\"ח – הסעה", "url": "https://www.ifly.co.il/wp-content/uploads/2024/06/%D7%91%D7%93%D7%97-%D7%94%D7%A8%D7%9E%D7%95%D7%A0%D7%99-%D7%9E%D7%90%D7%99-2024.pdf#page=7", "kw": "3,000", "ex": "בד\"ח הסעה: RPM לא יעלה על 3,000. גם CHT לא יעלה על 120°C בהסעה."},
+  {"lang": "he", "q": "מה מהירות גישה סופית עם מדפים 50°?", "opts": ["54 קשר", "57 קשר", "60 קשר", "65 קשר"], "ans": 1, "src": "בד\"ח – לפני נחיתה", "url": "https://www.ifly.co.il/wp-content/uploads/2024/06/%D7%91%D7%93%D7%97-%D7%94%D7%A8%D7%9E%D7%95%D7%A0%D7%99-%D7%9E%D7%90%D7%99-2024.pdf#page=11", "kw": "57 קשר", "ex": "בד\"ח פיינל: מהירות גישה סופית עם מדפים 50° – 57 קשר."},
+  {"lang": "he", "q": "מה כמות הדלק השמישה בליטר (שני מיכלים)?", "opts": ["100 ליטר", "110 ליטר", "115 ליטר", "118 ליטר"], "ans": 3, "src": "בד\"ח – נתונים טכניים", "url": "https://www.ifly.co.il/wp-content/uploads/2024/06/%D7%91%D7%93%D7%97-%D7%94%D7%A8%D7%9E%D7%95%D7%A0%D7%99-%D7%9E%D7%90%D7%99-2024.pdf#page=28", "kw": "118", "ex": "דלק שמיש: 31.2 גלון = 118 ליטר. סה\"כ קיבולת: 120 ליטר. לא שמיש: 2 ליטר."},
+  {"lang": "he", "q": "מה ה-RPM האדום העליון (מקסימום)?", "opts": ["5,200 RPM", "5,500 RPM", "5,800 RPM", "6,000 RPM"], "ans": 2, "src": "בד\"ח – ספר המטוס – מגבלות", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=24", "kw": "5,800", "ex": "RPM אדום עליון: 5,800 RPM. זהו מצב MTP – מותר מקסימום 5 דקות. אל תעלה מעל."},
+  {"lang": "he", "q": "מה מינימום לחץ דלק לפעולה תקינה?", "opts": ["1.0 bar (15 PSI)", "1.7 bar (25 PSI)", "2.5 bar (36 PSI)", "2.8 bar (41 PSI)"], "ans": 2, "src": "בד\"ח – ספר המטוס – מגבלות", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=24", "kw": "2.5 bar", "ex": "לחץ דלק מינימלי (קו אדום): 2.5 bar (36 PSI). אם יורד מכך – הפעל משאבה חשמלית."}
+,
+  {"lang": "en", "q": "What is VNO in km/h?", "opts": ["180 km/h", "195 km/h", "213 km/h", "230 km/h"], "ans": 2, "src": "POH Section 2, page 2-2", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=21", "kw": "213", "ex": "VNO: 115 KIAS = 213 km/h. Do not exceed in turbulent air."},
+  {"lang": "en", "q": "What is VS0 in km/h?", "opts": ["55 km/h", "61 km/h", "70 km/h", "75 km/h"], "ans": 1, "src": "POH Section 2, page 2-3", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=22", "kw": "61", "ex": "VS0: 33 KIAS = 61 km/h. Stall speed, flaps 50°, maximum weight."},
+  {"lang": "en", "q": "What is VS1 in km/h?", "opts": ["55 km/h", "57 km/h", "63 km/h", "70 km/h"], "ans": 2, "src": "POH Section 2, page 2-3", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=22", "kw": "63", "ex": "VS1: 34 KIAS = 63 km/h. Stall speed, flaps 0°, maximum weight."},
+  {"lang": "en", "q": "What is VA in km/h?", "opts": ["130 km/h", "148 km/h", "167 km/h", "185 km/h"], "ans": 2, "src": "POH Section 2, page 2-2", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=21", "kw": "167", "ex": "VA: 90 KIAS = 167 km/h. Maneuvering speed."},
+  {"lang": "en", "q": "What is the wing area in m²?", "opts": ["8.83 m²", "9.62 m²", "10.35 m²", "11.15 m²"], "ans": 2, "src": "POH Section 1, page 1-5", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=15", "kw": "10.35", "ex": "Wing area: 111.47 sq.ft = 10.35 m². Span: 9.28 m. MAC: 1,185 mm."},
+  {"lang": "en", "q": "What is the HTU total area in m²?", "opts": ["1.53 m²", "1.67 m²", "1.92 m²", "2.23 m²"], "ans": 2, "src": "POH Section 1, page 1-5", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=15", "kw": "1.92", "ex": "HTU total area: 20.67 sq.ft = 1.92 m². Span: 9.09 ft = 2.77 m."},
+  {"lang": "en", "q": "What is the VTU area in m²?", "opts": ["0.74 m²", "0.88 m²", "1.04 m²", "1.21 m²"], "ans": 2, "src": "POH Section 1, page 1-5", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=15", "kw": "1.04", "ex": "VTU area: 11.2 sq.ft = 1.04 m². Height: 4.21 ft = 1.28 m."},
+  {"lang": "en", "q": "What is the aileron area in m² (per side)?", "opts": ["0.20 m²", "0.26 m²", "0.31 m²", "0.37 m²"], "ans": 2, "src": "POH Section 1, page 1-5", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=15", "kw": "0.31", "ex": "Aileron area per side: 3.35 sq.ft = 0.31 m². Flap: 5.60 sq.ft = 0.52 m² per side."},
+  {"lang": "en", "q": "What is the flap area in m² (per side)?", "opts": ["0.35 m²", "0.42 m²", "0.52 m²", "0.63 m²"], "ans": 2, "src": "POH Section 1, page 1-5", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=15", "kw": "0.52", "ex": "Flap area per side: 5.60 sq.ft = 0.52 m². Max deflection: 50°. VFE: 70 KIAS."},
+  {"lang": "en", "q": "What is the maximum landing weight?", "opts": ["520 kg (1,146 lbs)", "550 kg (1,213 lbs)", "575 kg (1,268 lbs)", "600 kg (1,323 lbs)"], "ans": 3, "src": "POH Section 2, page 2-7", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=25", "kw": "600", "ex": "Maximum landing weight: 1,320 lbs = 600 kg. Same as MTOW for the Harmony."},
+  {"lang": "en", "q": "What is the cruise speed VC at sea level, 75% MCP?", "opts": ["90 KIAS", "95 KIAS", "100 KIAS", "107 KIAS"], "ans": 2, "src": "POH Section 1, page 1-8", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=18", "kw": "100", "ex": "Cruise speed VC at sea level, 75% MCP: 100 KIAS. At 2,000 ft 75% MCP: 95 KIAS."},
+  {"lang": "en", "q": "Can external power be used to run instruments on the ground?", "opts": ["Yes, always", "Yes, for avionics only", "No – external power is for engine starting only", "Yes, for up to 30 minutes"], "ans": 2, "src": "POH Section 2, page 2-16", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=34", "kw": "starting only", "ex": "Electrical limitation: external power (if socket installed) is for engine starting only. Not for powering instruments on ground."},
+  {"lang": "en", "q": "What is the MAC in mm?", "opts": ["978 mm", "1,067 mm", "1,185 mm", "1,321 mm"], "ans": 2, "src": "POH Section 2, page 2-8", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=26", "kw": "1,185", "ex": "MAC = 46.67 in = 1,185 mm. CG operating range: 20–31% MAC. Datum: 56.15 mm aft of wing leading edge."},
+  {"lang": "en", "q": "What is the MAC datum position?", "opts": ["At propeller flange", "At wing leading edge", "56.15 mm aft of wing leading edge", "At firewall"], "ans": 2, "src": "POH Section 2, page 2-8", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=26", "kw": "56.15", "ex": "MAC reference datum: 56.15 mm (2.21 in) aft of wing leading edge. MAC = 46.67 in = 1,185 mm."},
+  {"lang": "en", "q": "What is the empty CG range?", "opts": ["10 ± 5% MAC", "14 ± 5% MAC", "20 ± 5% MAC", "25 ± 5% MAC"], "ans": 1, "src": "POH Section 2, page 2-8", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=26", "kw": "14", "ex": "Empty airplane CG (standard equipment): 14 ± 5% MAC. Operating CG range: 20–31% MAC."},
+  {"lang": "en", "q": "What is the best glide speed in km/h?", "opts": ["90 km/h", "100 km/h", "106 km/h", "115 km/h"], "ans": 2, "src": "POH Section 3, page 3-2", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=37", "kw": "106", "ex": "Best glide speed: 57 KIAS = approx. 106 km/h. Flaps retracted."},
+  {"lang": "en", "q": "What is Vy with flaps 0° in km/h?", "opts": ["95 km/h", "100 km/h", "111 km/h", "120 km/h"], "ans": 2, "src": "POH Section 1, page 1-8", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=18", "kw": "111", "ex": "Vy flaps 0°: 60 KIAS = 111 km/h. Vy flaps 15°: 57 KIAS = 106 km/h."},
+  {"lang": "en", "q": "What is VFE in km/h?", "opts": ["100 km/h", "115 km/h", "130 km/h", "148 km/h"], "ans": 2, "src": "POH Section 2, page 2-2", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=21", "kw": "130", "ex": "VFE: 70 KIAS = 130 km/h. Do not extend flaps above this speed."},
+  {"lang": "en", "q": "What is the MAC length in inches?", "opts": ["38.5 in", "42.0 in", "46.67 in", "52.0 in"], "ans": 2, "src": "POH Section 2, page 2-8", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=26", "kw": "46.67", "ex": "MAC = 46.67 in (1,185 mm). CG reference datum: 56.15 mm aft of wing leading edge."},
+  {"lang": "en", "q": "What is the gear reduction ratio used for?", "opts": ["Reduces engine torque", "Reduces prop speed from engine RPM to safe prop RPM", "Increases power output", "Reduces fuel consumption"], "ans": 1, "src": "POH Section 2, page 2-4", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=23", "kw": "prop speed", "ex": "Gear ratio 2.43:1: engine at 5,800 RPM gives propeller at max 2,386 RPM. Keeps prop tip speed subsonic."},
+  {"lang": "he", "q": "מה ה-RPM האדום התחתון (מינימום)?", "opts": ["1,000 RPM", "1,200 RPM", "1,400 RPM", "1,600 RPM"], "ans": 2, "src": "בד\"ח – ספר המטוס – מגבלות", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=24", "kw": "1,400", "ex": "RPM – אין קו אדום תחתון אולם המינימום הפעולה: 1,400 RPM. מתחת לכך – מנוע עלול להיכבות."},
+  {"lang": "he", "q": "מה טווח ה-RPM הירוק (תקין)?", "opts": ["1,400–5,000 RPM", "1,400–5,500 RPM", "2,000–5,500 RPM", "1,400–5,800 RPM"], "ans": 1, "src": "בד\"ח – ספר המטוס – מגבלות", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=24", "kw": "1,400–5,500", "ex": "RPM – טווח ירוק (תקין): 1,400–5,500 RPM. צהוב (זהירות): 5,500–5,800 RPM. אדום: 5,800 RPM."},
+  {"lang": "he", "q": "מה טווח לחץ שמן הירוק (תקין)?", "opts": ["0.8–2.0 bar (12–29 PSI)", "1.0–3.5 bar (15–51 PSI)", "2.0–5.0 bar (29–73 PSI)", "3.5–7.0 bar (51–102 PSI)"], "ans": 2, "src": "בד\"ח – ספר המטוס – מגבלות", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=24", "kw": "2.0–5.0 bar", "ex": "לחץ שמן – ירוק (תקין): 2.0–5.0 bar (29–73 PSI). צהוב: 0.8–2.0 ו-5.0–7.0 bar."},
+  {"lang": "he", "q": "מה טווח לחץ דלק הירוק (תקין)?", "opts": ["1.5–2.5 bar (22–36 PSI)", "2.0–3.0 bar (29–44 PSI)", "2.8–3.2 bar (40.6–46.4 PSI)", "3.0–3.5 bar (44–51 PSI)"], "ans": 2, "src": "בד\"ח – ספר המטוס – מגבלות", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=24", "kw": "2.8–3.2 bar", "ex": "לחץ דלק – ירוק (תקין): 2.8–3.2 bar (40.61–46.41 PSI). צהוב: 2.5–2.8 ו-3.2–3.5 bar."},
+  {"lang": "he", "q": "מה הולטאז' הנורמלי (טווח ירוק)?", "opts": ["10.0–12.4V", "12.4–15.1V", "14.0–16.0V", "15.1–18.0V"], "ans": 1, "src": "בד\"ח – ספר המטוס – מגבלות", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=24", "kw": "12.4–15.1V", "ex": "מולטימטר – ירוק (תקין): 12.4–15.1V. אדום מינימום: 10.0V. אדום מקסימום: 15.1V."},
+  {"lang": "he", "q": "מה גורם העומס החיובי המקסימלי?", "opts": ["2.5g", "3.5g", "4.0g", "6.0g"], "ans": 2, "src": "בד\"ח – ספר המטוס – מגבלות", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=26", "kw": "4.0g", "ex": "גורם עומס מקסימלי חיובי: +4.0g. שלילי: -2.0g. אקרובטיקה וסחרור מכוון אסורים."},
+  {"lang": "he", "q": "מה גורם העומס השלילי המקסימלי?", "opts": ["−0.5g", "−1.0g", "−2.0g", "−3.5g"], "ans": 2, "src": "בד\"ח – ספר המטוס – מגבלות", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=26", "kw": "-2.0g", "ex": "גורם עומס מקסימלי שלילי: -2.0g. חיובי: +4.0g."},
+  {"lang": "he", "q": "מה זווית הנטייה המקסימלית בסיבוב תלול?", "opts": ["30°", "45°", "60°", "75°"], "ans": 2, "src": "בד\"ח – ספר המטוס – מגבלות", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=26", "kw": "60°", "ex": "נטייה מקסימלית: 60°. ב-60°, גורם עומס = 2.0g. אקרובטיקה אסורה."},
+  {"lang": "he", "q": "מה מרחק מינימום מברקים?", "opts": ["10 מייל (16 ק\"מ)", "15 מייל (24 ק\"מ)", "25 מייל (40 ק\"מ)", "50 מייל (80 ק\"מ)"], "ans": 2, "src": "בד\"ח – ספר המטוס – מגבלות", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=27", "kw": "25 מייל", "ex": "אסור לטוס בתחום 25 מייל (40 ק\"מ) מברקים ידועים. גם תנאי קרח אסורים."},
+  {"lang": "he", "q": "מה מינימום כמות שמן?", "opts": ["1.5 ליטר", "2.0 ליטר", "2.5 ליטר", "3.0 ליטר"], "ans": 2, "src": "בד\"ח – ספר המטוס – מגבלות", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=30", "kw": "2.5 ליטר", "ex": "מינימום שמן: 2.5 ליטר (סימן MIN על שיפודי הבדיקה). מקסימום: 3.0 ליטר."},
+  {"lang": "he", "q": "מה מקסימום כמות שמן?", "opts": ["2.0 ליטר", "2.5 ליטר", "3.0 ליטר", "3.5 ליטר"], "ans": 2, "src": "בד\"ח – ספר המטוס – מגבלות", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=30", "kw": "3.0 ליטר", "ex": "מקסימום שמן: 3.0 ליטר (סימן MAX על שיפודי הבדיקה). אל תמלא יותר."},
+  {"lang": "he", "q": "מה הכוח המקסימלי בהמראה (MTP)?", "opts": ["59 קילוואט (80 כ\"ס)", "69 קילוואט (93 כ\"ס)", "73.5 קילוואט (100 כ\"ס)", "78 קילוואט (105 כ\"ס)"], "ans": 2, "src": "בד\"ח – ספר המטוס – מגבלות", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=23", "kw": "73.5 קילוואט", "ex": "MTP (כוח המראה מקסימלי): 73.5 קילוואט (100 כ\"ס) ב-5,800 RPM – מקסימום 5 דקות."},
+  {"lang": "he", "q": "מה הכוח המקסימלי המתמשך (MCP)?", "opts": ["59 קילוואט (80 כ\"ס)", "69 קילוואט (93 כ\"ס)", "73.5 קילוואט (100 כ\"ס)", "78 קילוואט (105 כ\"ס)"], "ans": 1, "src": "בד\"ח – ספר המטוס – מגבלות", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=23", "kw": "69 קילוואט", "ex": "MCP (כוח מתמשך מקסימלי): 69 קילוואט (93 כ\"ס) ב-5,500 RPM – ללא הגבלת זמן."},
+  {"lang": "he", "q": "מה מוטת הכנף במטרים?", "opts": ["8.00 מ'", "8.75 מ'", "9.28 מ'", "10.00 מ'"], "ans": 2, "src": "בד\"ח – נתונים טכניים", "url": "https://www.ifly.co.il/wp-content/uploads/2024/06/%D7%91%D7%93%D7%97-%D7%94%D7%A8%D7%9E%D7%95%D7%A0%D7%99-%D7%9E%D7%90%D7%99-2024.pdf#page=26", "kw": "9.28 מ'", "ex": "מוטת כנף: 30.45 רגל = 9.28 מ'. שטח כנף: 111.47 sq.ft = 10.35 מ\"ר."},
+  {"lang": "he", "q": "מה אורך המטוס במטרים?", "opts": ["5.50 מ'", "5.90 מ'", "6.25 מ'", "7.00 מ'"], "ans": 2, "src": "בד\"ח – נתונים טכניים", "url": "https://www.ifly.co.il/wp-content/uploads/2024/06/%D7%91%D7%93%D7%97-%D7%94%D7%A8%D7%9E%D7%95%D7%A0%D7%99-%D7%9E%D7%90%D7%99-2024.pdf#page=26", "kw": "6.25 מ'", "ex": "אורך המטוס: 20.51 רגל = 6.25 מ'. גובה: 8.12 רגל = 2.47 מ'."},
+  {"lang": "he", "q": "מה גורם הגירוי של המנוע (Gear Ratio)?", "opts": ["1.85:1", "2.00:1", "2.43:1", "3.47:1"], "ans": 2, "src": "בד\"ח – ספר המטוס – מגבלות", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=23", "kw": "2.43:1", "ex": "יחס גירוי: 2.43:1. מנוע ב-5,800 RPM נותן מדחף מקסימום 2,386 RPM."},
+  {"lang": "he", "q": "מה קוטר המדחף?", "opts": ["60 אינץ (152 ס\"מ)", "64 אינץ (163 ס\"מ)", "68 אינץ (173 ס\"מ)", "72 אינץ (183 ס\"מ)"], "ans": 2, "src": "בד\"ח – ספר המטוס – מגבלות", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=23", "kw": "68 אינץ", "ex": "קוטר מדחף: 68 אינץ (173 ס\"מ). Warpdrive HPL-R, 3 להבים, מתכוונן בקרקע."},
+  {"lang": "he", "q": "מה מהירות מדחף מקסימלית?", "opts": ["2,000 RPM", "2,200 RPM", "2,386 RPM", "2,500 RPM"], "ans": 2, "src": "בד\"ח – ספר המטוס – מגבלות", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=23", "kw": "2,386 RPM", "ex": "מהירות מדחף מקסימלית: 2,386 RPM (מנוע ב-5,800 RPM, יחס גירוי 2.43:1)."},
+  {"lang": "he", "q": "מה מינימום RPM בסרק?", "opts": ["1,000 RPM", "1,200 RPM", "1,400 RPM", "1,600 RPM"], "ans": 2, "src": "בד\"ח – ספר המטוס – מגבלות", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=23", "kw": "1,400 RPM", "ex": "מינימום RPM בסרק: 1,400 RPM. מתחת לכך – מנוע עלול לכבות."},
+  {"lang": "he", "q": "מה VNE במהירות ק\"מ/שעה?", "opts": ["200 קמ\"ש", "240 קמ\"ש", "270 קמ\"ש", "300 קמ\"ש"], "ans": 2, "src": "בד\"ח – ספר המטוס – מגבלות", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=21", "kw": "270 קמ\"ש", "ex": "VNE: 146 קשר = 270 קמ\"ש. לא לחרוג לעולם מהמהירות הזו."},
+  {"lang": "he", "q": "מה VFE במהירות ק\"מ/שעה?", "opts": ["100 קמ\"ש", "115 קמ\"ש", "130 קמ\"ש", "150 קמ\"ש"], "ans": 2, "src": "בד\"ח – ספר המטוס – מגבלות", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=21", "kw": "130 קמ\"ש", "ex": "VFE: 70 קשר = 130 קמ\"ש. לא לפרוש מדפים מעל למהירות זו."}
+];
+
+document.getElementById('cover-count').textContent = QUESTIONS.length + ' Questions';
+
+let shuffled=[], idx=0, correct=0, wrong=0, asked=0;
+// History: array of {q, chosenIdx, correctIdx, sOpts} for previous-answer display
+let history = [];
+let _currentAnswered = false;  // true once current question has been answered
+
+function seededShuffle(arr,seed){
+  const a=[...arr]; let s=seed|0;
+  for(let i=a.length-1;i>0;i--){
+    s=(Math.imul(s,1664525)+1013904223)|0;
+    [a[i],a[Math.abs(s)%(i+1)]]=[a[Math.abs(s)%(i+1)],a[i]];
+  }
+  return a;
+}
+
+function startQuiz(){
+  shuffled=seededShuffle(QUESTIONS,Date.now());
+  idx=0;correct=0;wrong=0;asked=0;history=[];
+  document.getElementById('cover').style.display='none';
+  document.getElementById('quiz').style.display='block';
+  showQ();
+}
+function goHome(){
+  document.getElementById('quiz').style.display='none';
+  document.getElementById('cover').style.display='flex';
+}
+
+function showQ(){
+  if(idx>=shuffled.length){shuffled=seededShuffle(QUESTIONS,(Date.now()^idx*31337));idx=0;}
+  const q=shuffled[idx]; asked++;
+  const en=q.lang==='en';
+  const total=QUESTIONS.length;
+
+  document.getElementById('qc').textContent=asked;
+  document.getElementById('qnum').textContent=(en?'Question ':'שאלה ')+asked+(en?' of ':' מתוך ')+total;
+  const qtEl=document.getElementById('qtext');
+  qtEl.textContent=q.q;
+  qtEl.className=en?'q-text-en':'q-text-he';
+  qtEl.dir=en?'ltr':'rtl';
+  document.getElementById('sc').textContent=correct;
+  document.getElementById('sw').textContent=wrong;
+  document.getElementById('pf').style.width=((asked/total)*100)+'%';
+  document.getElementById('feedback').style.display='none';
+  // Show prev button immediately if there is history; hide next until answered
+  _currentAnswered = false;  // reset for new question
+  const _navRow=document.getElementById('nav-row');
+  const _btnPrev=document.getElementById('btn-prev');
+  const _btnNext=document.getElementById('btn-next');
+  if(history.length>0){
+    _navRow.style.display='flex';
+    _btnPrev.style.display='';
+    _btnNext.style.display='none';
+  } else {
+    _navRow.style.display='none';
+  }
+
+  const letters=en?['A','B','C','D']:['א','ב','ג','ד'];
+  const sOpts=seededShuffle(q.opts.map((t,i)=>({t,i})),(Date.now()*asked)|0);
+  // Store shuffled options on the question object for history display
+  q._sOpts=sOpts; q._letters=letters;
+
+  const container=document.getElementById('opts');
+  container.innerHTML='';
+  sOpts.forEach((opt,li)=>{
+    const btn=document.createElement('button');
+    btn.className=en?'opt-en':'opt-he';
+    btn.dir=en?'ltr':'rtl';
+    const lspan=document.createElement('span');
+    lspan.className='opt-letter';
+    lspan.textContent=letters[li];
+    const tspan=document.createElement('span');
+    tspan.textContent=opt.t;
+    btn.appendChild(lspan);
+    btn.appendChild(tspan);
+    btn.onclick=()=>pick(btn,opt.i,q.ans,q,sOpts,letters);
+    container.appendChild(btn);
+  });
+}
+
+function pick(btn,chosen,correctIdx,q,sOpts,letters){
+  _currentAnswered = true;
+  document.querySelectorAll('.opt-en,.opt-he').forEach(b=>b.disabled=true);
+  const ok=chosen===correctIdx, en=q.lang==='en';
+  if(ok){btn.classList.add('correct');correct++;}
+  else{
+    btn.classList.add('wrong');wrong++;
+    document.querySelectorAll('.opt-en,.opt-he').forEach(b=>{
+      const bTxt=b.querySelector('span:last-child').textContent;
+      const o=sOpts.find(x=>x.t===bTxt);
+      if(o&&o.i===correctIdx)b.classList.add('correct');
+    });
+  }
+
+  // Save to history
+  history.push({q, chosenIdx:chosen, correctIdx, sOpts, letters, ok});
+
+  const fb=document.getElementById('feedback');
+  fb.className='feedback '+(ok?'correct-fb':'wrong-fb');
+  fb.style.display='block';
+  document.getElementById('fb-icon').textContent=ok?'✅':'❌';
+  document.getElementById('fb-title').textContent=ok?(en?'Correct!':'תשובה נכונה!'):(en?'Incorrect':'תשובה שגויה');
+
+  const ansEl=document.getElementById('fb-ans');
+  ansEl.className='fb-ans '+(en?'fb-ans-en':'fb-ans-he');
+  ansEl.dir=en?'ltr':'rtl';
+  const cTxt=q.opts[correctIdx];
+  ansEl.innerHTML=(ok?'':(en?'<strong>Correct answer:</strong> ':'<strong>התשובה הנכונה:</strong> '))+cTxt;
+
+  // Excerpt
+  const exWrap=document.getElementById('fb-excerpt');
+  if(q.ex&&q.ex.length>2){
+    const exInner=document.getElementById('fb-ex-inner');
+    exInner.className='fb-excerpt '+(en?'fb-excerpt-en':'fb-excerpt-he');
+    exInner.dir=en?'ltr':'rtl';
+    document.getElementById('fb-ex-label').textContent=en?'From the source:':'מתוך המקור:';
+    document.getElementById('fb-ex-text').textContent=q.ex;
+    exWrap.style.display='block';
+  }else{exWrap.style.display='none';}
+
+  // Source link
+  const srcEl=document.getElementById('fb-src');
+  srcEl.href=q.url; srcEl.target='_blank'; srcEl.rel='noopener';
+  document.getElementById('fb-src-text').textContent=q.src;
+
+  // Abbreviations
+  const combo=q.opts[correctIdx]+' '+q.q;
+  const hits=[];
+  for(const[k,v]of Object.entries(ABBREV)){if(new RegExp('\\b'+k+'\\b').test(combo))hits.push(v);}
+  const abbEl=document.getElementById('fb-abbrev');
+  if(hits.length){abbEl.innerHTML='<strong style="color:var(--muted);font-size:.75rem;">'+(en?'Terms:':'מונחים:')+' </strong>'+hits.join(' · ');abbEl.style.display='block';}
+  else{abbEl.style.display='none';}
+
+  document.getElementById('sc').textContent=correct;
+  document.getElementById('sw').textContent=wrong;
+
+  // Show nav row with both buttons after answering
+  const navRow=document.getElementById('nav-row');
+  const btnPrev=document.getElementById('btn-prev');
+  const btnNext=document.getElementById('btn-next');
+  navRow.style.display='flex';
+  // Show prev if there was at least one question before this one
+  btnPrev.style.display=history.length>1?'':'none';
+  btnNext.style.display='';
+}
+
+function nextQ(){
+  const jump=1+Math.abs(((Date.now()*(idx+1))^(correct*7+wrong*13))%7);
+  idx=(idx+jump)%shuffled.length;
+  showQ();
+}
+
+// ── Previous Answer Overlay ──
+function showPrev(){
+  // If current question not yet answered: last entry in history IS the previous question
+  // If current question already answered: second-to-last entry is the previous question
+  const prevIdx = _currentAnswered ? history.length-2 : history.length-1;
+  if(prevIdx < 0) return;
+  const prev=history[prevIdx];
+  const {q,chosenIdx,correctIdx,sOpts,letters,ok}=prev;
+  const en=q.lang==='en';
+
+  document.getElementById('prev-label').textContent=en?'Previous Question':'השאלה הקודמת';
+
+  const prevQ=document.getElementById('prev-q');
+  prevQ.textContent=q.q;
+  prevQ.dir=en?'ltr':'rtl';
+  prevQ.style.textAlign=en?'left':'right';
+
+  const prevOpts=document.getElementById('prev-opts');
+  prevOpts.innerHTML='';
+  prevOpts.dir=en?'ltr':'rtl';
+  sOpts.forEach((opt,li)=>{
+    const div=document.createElement('div');
+    let cls='prev-opt';
+    if(opt.i===correctIdx) cls+=' was-answer';
+    else if(opt.i===chosenIdx&&!ok) cls+=' was-wrong';
+    div.className=cls;
+    div.dir=en?'ltr':'rtl';
+    div.style.textAlign=en?'left':'right';
+    div.textContent=letters[li]+'. '+opt.t;
+    if(opt.i===chosenIdx&&!ok) div.textContent+=' ✗';
+    if(opt.i===correctIdx) div.textContent+=' ✓';
+    prevOpts.appendChild(div);
+  });
+
+  const prevExcerpt=document.getElementById('prev-excerpt');
+  if(q.ex&&q.ex.length>2){
+    prevExcerpt.textContent=q.ex;
+    prevExcerpt.dir=en?'ltr':'rtl';
+    prevExcerpt.style.textAlign=en?'left':'right';
+    prevExcerpt.style.display='block';
+  }else{prevExcerpt.style.display='none';}
+
+  const prevSrc=document.getElementById('prev-src');
+  prevSrc.href=q.url; prevSrc.target='_blank';
+  document.getElementById('prev-src-text').textContent=q.src;
+
+  document.getElementById('prev-overlay').style.display='block';
+  document.body.style.overflow='hidden';
+}
+function closePrev(e){
+  if(e.target===document.getElementById('prev-overlay')) closePrevBtn();
+}
+function closePrevBtn(){
+  document.getElementById('prev-overlay').style.display='none';
+  document.body.style.overflow='';
+}
+
+function checkOr(){
+  document.getElementById('lg').style.display=
+    (window.innerWidth>window.innerHeight&&window.innerWidth>500)?'flex':'none';
+}
+window.addEventListener('resize',checkOr);
+checkOr();
+</script>
+</body>
+</html>
