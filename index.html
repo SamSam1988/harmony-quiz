@@ -501,8 +501,8 @@ const QUESTIONS = [
   {"lang": "he", "q": "מה מהירות Vx עם מדפים 0° (קשר)?", "opts": ["50 קשר (58 mph)", "54 קשר (63 mph)", "56 קשר (65 mph)", "60 קשר (74 mph)"], "ans": 2, "src": "בד\"ח – ספר המטוס", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=18", "kw": "56 קשר", "ex": "VX – Best Angle of Climb Speed, מדפים 0°: 56 KIAS (65 mph IAS)."},
   {"lang": "he", "q": "מה מהירות Vx עם מדפים 15° (קשר)?", "opts": ["50 קשר (58 mph)", "54 קשר (63 mph)", "56 קשר (65 mph)", "60 קשר (74 mph)"], "ans": 1, "src": "בד\"ח – ספר המטוס", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=18", "kw": "54 קשר", "ex": "VX – Best Angle of Climb Speed, מדפים 15°: 54 KIAS (63 mph IAS)."},
   {"lang": "he", "q": "מה VA – מהירות תמרון?", "opts": ["70 קשר (81 mph)", "80 קשר (92 mph)", "90 קשר (104 mph)", "107 קשר (123 mph)"], "ans": 2, "src": "בד\"ח – ספר המטוס", "url": "https://www.ifly.co.il/wp-content/uploads/2025/07/HARMLSAIS-POH_HSC_2023_2226FF.pdf#page=21", "kw": "90 קשר", "ex": "VA – Maneuvering Speed: 90 KIAS (104 mph). לא לבצע תמרונים חדים מעל מהירות זו."}
-];nIdx, correctIdx, sOpts} for previous-answer display
-let history = [];
+];
+let history = [];  // {q, chosenIdx, correctIdx, sOpts, letters, ok}
 let _currentAnswered = false;
 
 function seededShuffle(arr,seed){
